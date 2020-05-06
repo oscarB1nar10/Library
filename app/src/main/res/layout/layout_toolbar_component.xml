@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/my_toolbar"
+            style="@style/Toolbar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    
+        <View
+            android:id="@+id/icon_toolbar_left"
+            style="@style/Toolbar_action_icon.Toolbar_left_action_icon"
+            app:layout_constraintStart_toStartOf="@id/my_toolbar"
+            app:layout_constraintTop_toTopOf="@id/my_toolbar"
+            app:layout_constraintBottom_toBottomOf="@id/my_toolbar"/>
+    
+        <TextView
+            style="@style/Toolbar_title"
+            app:layout_constraintStart_toStartOf="@id/my_toolbar"
+            app:layout_constraintEnd_toEndOf="@id/my_toolbar"
+            app:layout_constraintTop_toTopOf="@id/my_toolbar"
+            app:layout_constraintBottom_toBottomOf="@id/my_toolbar"
+            tools:text="Toolbar Title"/>
+
+        <View
+            android:id="@+id/icon_toolbar_right"
+            style="@style/Toolbar_action_icon.Toolbar_right_action_icon"
+            app:layout_constraintEnd_toEndOf="@id/my_toolbar"
+            app:layout_constraintTop_toTopOf="@id/my_toolbar"
+            app:layout_constraintBottom_toBottomOf="@id/my_toolbar"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</merge>
