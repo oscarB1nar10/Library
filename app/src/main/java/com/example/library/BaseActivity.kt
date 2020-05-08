@@ -1,6 +1,7 @@
 package com.example.library
 
 import android.os.Bundle
+import androidx.appcompat.app.ActionBar
 import dagger.android.support.DaggerAppCompatActivity
 
 abstract class BaseActivity: DaggerAppCompatActivity(){
@@ -11,7 +12,10 @@ abstract class BaseActivity: DaggerAppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(getLayoutResourceId())
 
-        setupToolbar()
+        supportActionBar?.let {
+            it.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
+            it.setCustomView(R.layout.layout_toolbar_component)
+        }
     }
 
     protected open fun setupToolbar() {

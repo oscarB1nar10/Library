@@ -10,11 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.example.library.ui.components.ToolbarComponent
-            android:id="@+id/my_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"/>
+        <include layout="@layout/layout_toolbar_component"
+            android:id="@+id/my_toolbar"/>
 
         <fragment
             android:id="@+id/my_nav_host_fragment"
