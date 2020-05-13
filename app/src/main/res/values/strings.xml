@@ -4,6 +4,8 @@
     <!-- MainActivity -->
     <string name="menu_all_books">List of books</string>
     <string name="menu_add_books">Add books</string>
+    <string name="menu_search_filter">Filter</string>
+    <string name="menu_search_search">Search</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

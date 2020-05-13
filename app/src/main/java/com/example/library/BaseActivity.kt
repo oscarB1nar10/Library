@@ -1,8 +1,8 @@
 package com.example.library
 
 import android.os.Bundle
-import androidx.appcompat.app.ActionBar
 import dagger.android.support.DaggerAppCompatActivity
+import kotlinx.android.synthetic.main.layout_toolbar_component.*
 
 abstract class BaseActivity: DaggerAppCompatActivity(){
 
@@ -12,10 +12,7 @@ abstract class BaseActivity: DaggerAppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(getLayoutResourceId())
 
-        supportActionBar?.let {
-            it.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
-            it.setCustomView(R.layout.layout_toolbar_component)
-        }
+        setSupportActionBar(my_toolbar)
     }
 
     protected open fun setupToolbar() {
