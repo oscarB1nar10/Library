@@ -17,6 +17,12 @@ data class Book(
     @ColumnInfo(name = "name")
     var name: String,
 
+    @ColumnInfo(name = "image")
+    var image: String,
+
+    @ColumnInfo(name = "description")
+    var description: String,
+
     @ColumnInfo(name = "editorial")
     var editorial: String,
 
