@@ -9,6 +9,20 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <!-- MyBooksFragment -->
+
+    <!-- NotesView -->
+    <string name="notes">Notes</string>
+    <string name="notes_counter">%d/%d</string>
+    <string name="notes_notes_count">%d/256</string>
+
+    <!-- AddBooksFragment -->
+    <string name="add_book_title">Title</string>
+    <string name="add_book_image">Book image</string>
+    <string name="add_book_description">Description</string>
+    <string name="add_book_gender">Gender</string>
+    <string name="add_book_gender_name">Name</string>
+    <string name="add_book_author">Author</string>
+    <string name="add_book_author_age">Age</string>
+    <string name="add_book_author_nationality">Nationality</string>
 
 </resources>
