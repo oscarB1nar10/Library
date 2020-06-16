@@ -112,4 +112,7 @@ dependencies {
     //  Firebase
     implementation 'com.google.firebase:firebase-analytics:17.2.2'
     implementation 'com.google.firebase:firebase-database-ktx:19.3.0'
+
+    // Round images
+    implementation "com.makeramen:roundedimageview:$rootProject.roundedImageView"
 }
