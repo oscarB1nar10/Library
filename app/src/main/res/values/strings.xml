@@ -24,5 +24,7 @@
     <string name="add_book_author">Author</string>
     <string name="add_book_author_age">Age</string>
     <string name="add_book_author_nationality">Nationality</string>
+    <string name="add_book_action_to_add">Add Book</string>
+
 
 </resources>
