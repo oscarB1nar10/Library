@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    tools:context=".ui.add_books.AddBooksFragment">
+    tools:context=".ui.add_books.AddBookFragment">
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/checkout_discount_scrollview"
@@ -45,7 +45,7 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColorHint="@color/slate_000"/>
+                    android:textColorHint="@color/slate_000" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
