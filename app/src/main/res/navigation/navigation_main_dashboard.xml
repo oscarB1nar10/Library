@@ -15,7 +15,7 @@
     </fragment>
     <fragment
         android:id="@+id/addBooksFragment"
-        android:name="com.example.library.ui.add_books.AddBooksFragment"
+        android:name="com.example.library.ui.add_books.AddBookFragment"
         android:label="fragment_add_books"
         tools:layout="@layout/fragment_add_books" />
 </navigation>

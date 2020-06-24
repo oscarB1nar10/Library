@@ -17,7 +17,7 @@ constructor(
     private val bookCollection: CollectionReference
 ){
 
-    fun addBook(book: Book) = flow<State<DocumentReference>>{
+    suspend fun addBook(book: Book) = flow<State<DocumentReference>>{
 
         // Emit loading state
         emit(State.loading())
