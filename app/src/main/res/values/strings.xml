@@ -26,5 +26,8 @@
     <string name="add_book_author_nationality">Nationality</string>
     <string name="add_book_action_to_add">Add Book</string>
 
+    <!-- BookGender -->
+
+
 
 </resources>

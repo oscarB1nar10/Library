@@ -17,5 +17,14 @@
         android:id="@+id/addBooksFragment"
         android:name="com.example.library.ui.add_books.AddBookFragment"
         android:label="fragment_add_books"
-        tools:layout="@layout/fragment_add_books" />
+        tools:layout="@layout/fragment_add_books" >
+        <action
+            android:id="@+id/action_addBooksFragment_to_genderFragment"
+            app:destination="@id/genderFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/genderFragment"
+        android:name="com.example.library.ui.book_gender.BookGenderFragment"
+        android:label="fragment_gender"
+        tools:layout="@layout/fragment_book_gender" />
 </navigation>
