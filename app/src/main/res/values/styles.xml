@@ -125,4 +125,16 @@
         <item name="android:minHeight">72dp</item>
     </style>
 
+    <!-- Generic FAB -->
+    <style name="generic_fab">
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="backgroundTint">@color/huckleberry_500</item>
+        <item name="elevation">6dp</item>
+        <item name="pressedTranslationZ">6dp</item>
+        <item name="rippleColor">@color/huckleberry_000</item>
+        <item name="srcCompat">@drawable/ic_add</item>
+        <item name="fabSize">normal</item>
+    </style>
+
 </resources>

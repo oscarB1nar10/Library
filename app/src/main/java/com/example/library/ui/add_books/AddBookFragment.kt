@@ -6,10 +6,12 @@ import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.example.library.BaseFragment
 import com.example.library.R
 import com.example.library.states.State
 import kotlinx.android.synthetic.main.fragment_add_books.*
+import kotlinx.android.synthetic.main.layout_book_gender.*
 import javax.inject.Inject
 
 class AddBookFragment : BaseFragment() {
@@ -34,6 +36,10 @@ class AddBookFragment : BaseFragment() {
 
         cb_add_book.setOnClickListener {
             viewModel.addBook(buildBookFromFields())
+        }
+
+        text_gender_label.setOnClickListener {
+            findNavController().navigate(R.id.action_addBooksFragment_to_genderFragment)
         }
 
     }

@@ -27,7 +27,7 @@
     <string name="add_book_action_to_add">Add Book</string>
 
     <!-- BookGender -->
-
+    <string name="add_book_gender_fab">Add new gender</string>
 
 
 </resources>
