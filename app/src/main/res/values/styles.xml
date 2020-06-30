@@ -137,4 +137,11 @@
         <item name="fabSize">normal</item>
     </style>
 
+    <!-- Generic DialogFragment -->
+    <style name="BaseDialogFragment" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowMinWidthMinor">95%</item>
+        <item name="android:windowMinWidthMajor">55%</item>
+    </style>
+
 </resources>

@@ -29,5 +29,8 @@
     <!-- BookGender -->
     <string name="add_book_gender_fab">Add new gender</string>
 
+    <!-- GenderDialog -->
+
+
 
 </resources>
