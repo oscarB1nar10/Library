@@ -10,9 +10,9 @@ import kotlinx.android.parcel.Parcelize
 @Entity(tableName = "Gender")
 data class Gender(
 
-    @PrimaryKey(autoGenerate = false)
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "pk")
-    var pk: Int,
+    var pk: Int = -1,
 
     @ColumnInfo(name = "name")
     var name: String,

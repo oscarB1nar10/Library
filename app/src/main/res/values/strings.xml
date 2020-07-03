@@ -15,6 +15,9 @@
     <string name="notes_counter">%d/%d</string>
     <string name="notes_notes_count">%d/256</string>
 
+    <!-- DashboardFragment -->
+    <string name="dashboard_fragment_no_books_added_yet">No books added yet</string>
+
     <!-- AddBooksFragment -->
     <string name="add_book_title">Title</string>
     <string name="add_book_image">Book image</string>
@@ -25,6 +28,14 @@
     <string name="add_book_author_age">Age</string>
     <string name="add_book_author_nationality">Nationality</string>
     <string name="add_book_action_to_add">Add Book</string>
+
+    <!-- BookGender -->
+    <string name="add_book_gender_fab">Add new gender</string>
+    <string name="add_book_gender_ok_dialog_button">ok</string>
+    <string name="add_book_gender_cancel_dialog_button">cancel</string>
+    <string name="add_book_gender_gender_name">Gender Name</string>
+    <!-- GenderDialog -->
+
 
 
 </resources>

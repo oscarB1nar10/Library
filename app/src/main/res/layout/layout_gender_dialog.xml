@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_inl_book_gender_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="56dp"
+        app:hintTextColor="@color/slate_600"
+        android:hint="@string/add_book_gender_gender_name"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="16dp">
+
+        <EditText
+            android:id="@+id/edit_book_gender_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/slate_600"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.example.library.ui.components.NotesView
+        android:id="@+id/notes_book_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/text_inl_book_gender_name"
+        app:title="@string/add_book_description"
+        tools:layout_editor_absoluteX="0dp" />
+
+    <View
+        android:id="@+id/tertiary_separating_line"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/slate_100"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/notes_book_description" />
+
+    <TextView
+        android:id="@+id/tv_ok"
+        style="@style/Body2"
+        android:layout_width="35dp"
+        android:layout_height="wrap_content"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="16dp"
+        android:textColor="@color/huckleberry_500"
+        android:textAllCaps="true"
+        android:text="@string/add_book_gender_ok_dialog_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tertiary_separating_line"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv_cancel"
+        style="@style/Body2.Regular"
+        android:layout_marginEnd="40dp"
+        android:layout_marginTop="15dp"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/add_book_gender_cancel_dialog_button"
+        app:layout_constraintEnd_toStartOf="@+id/tv_ok"
+        app:layout_constraintTop_toBottomOf="@+id/tertiary_separating_line"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

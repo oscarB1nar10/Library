@@ -2,19 +2,19 @@ package com.example.library.ui.add_books
 
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import com.example.library.BaseFragment
 import com.example.library.R
 import com.example.library.states.State
-import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_add_books.*
+import kotlinx.android.synthetic.main.layout_book_gender.*
 import javax.inject.Inject
 
-class AddBookFragment : DaggerFragment() {
+class AddBookFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelProvider: ViewModelProvider.Factory
@@ -23,13 +23,7 @@ class AddBookFragment : DaggerFragment() {
         viewModelProvider
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_add_books,container,false)
-    }
+    override fun getLayoutResourceId(): Int = R.layout.fragment_add_books
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -42,6 +36,10 @@ class AddBookFragment : DaggerFragment() {
 
         cb_add_book.setOnClickListener {
             viewModel.addBook(buildBookFromFields())
+        }
+
+        text_gender_label.setOnClickListener {
+            findNavController().navigate(R.id.action_addBooksFragment_to_genderFragment)
         }
 
     }

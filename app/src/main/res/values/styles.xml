@@ -118,4 +118,34 @@
         <item name="android:background">@drawable/primary_sticky_button_drawable</item>
     </style>
 
+    <!-- Cards -->
+    <style name="generic_card">
+        <item name="android:layout_marginStart">12dp</item>
+        <item name="android:layout_marginEnd">12dp</item>
+        <item name="android:minHeight">72dp</item>
+    </style>
+
+    <!-- Generic FAB -->
+    <style name="generic_fab">
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="backgroundTint">@color/huckleberry_500</item>
+        <item name="elevation">6dp</item>
+        <item name="pressedTranslationZ">6dp</item>
+        <item name="rippleColor">@color/huckleberry_000</item>
+        <item name="srcCompat">@drawable/ic_add</item>
+        <item name="fabSize">normal</item>
+    </style>
+
+    <!-- Generic DialogFragment -->
+    <style name="BaseDialogFragment" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowMinWidthMinor">95%</item>
+        <item name="android:windowMinWidthMajor">55%</item>
+        <!-- Used for the title and text -->
+        <item name="android:textColorPrimary">@color/slate_600</item>
+        <!-- Used for the background -->
+        <item name="android:background">@color/white</item>
+    </style>
+
 </resources>

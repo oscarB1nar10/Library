@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Headline1">
+        <item name="android:textSize">48sp</item>
+        <item name="android:textColor">@color/slate_700</item>
+        <item name="fontPath">fonts/Graphik-Bold.otf</item>
+    </style>
+
+    <style name="Headline2" parent="Headline1">
+        <item name="android:textSize">36sp</item>
+    </style>
+
+    <style name="Headline3" parent="Headline1">
+        <item name="android:textSize">28sp</item>
+        <item name="fontPath">fonts/Graphik-Semibold.otf</item>
+    </style>
+
+    <style name="Headline4" parent="Headline1">
+        <item name="android:textSize">24sp</item>
+        <item name="fontPath">fonts/Graphik-Medium.otf</item>
+    </style>
+
+    <style name="Headline5" parent="Headline4">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="Headline6" parent="Headline4">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Body1">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/slate_700</item>
+        <item name="fontPath">fonts/Graphik-Medium.otf</item>
+    </style>
+
+    <style name="Body1.Regular">
+        <item name="fontPath">fonts/Graphik-Regular.otf</item>
+    </style>
+
+    <style name="Body2">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/slate_700</item>
+        <item name="fontPath">fonts/Graphik-Medium.otf</item>
+    </style>
+
+    <style name="Body2.Regular">
+        <item name="fontPath">fonts/Graphik-Regular.otf</item>
+    </style>
+
+    <style name="CaptionText">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/slate_700</item>
+        <item name="fontPath">fonts/Graphik-Medium.otf</item>
+    </style>
+
+    <style name="CaptionText.Regular">
+        <item name="fontPath">fonts/Graphik-Regular.otf</item>
+    </style>
+
+    <style name="CaptionText.Uppercase">
+        <item name="android:textSize">11sp</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="CaptionText.Italic">
+        <item name="fontPath">fonts/Graphik-RegularItalic.otf</item>
+    </style>
+
+    <style name="MicroCopyText">
+        <item name="android:textSize">11sp</item>
+        <item name="android:textColor">@color/slate_700</item>
+        <item name="fontPath">fonts/Graphik-Regular.otf</item>
+    </style>
+
+    <style name="ButtonText">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/slate_700</item>
+        <item name="fontPath">fonts/Graphik-Medium.otf</item>
+    </style>
+
+    <style name="ButtonText.Regular">
+        <item name="fontPath">fonts/Graphik-Regular.otf</item>
+    </style>
+</resources>
