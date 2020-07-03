@@ -138,10 +138,14 @@
     </style>
 
     <!-- Generic DialogFragment -->
-    <style name="BaseDialogFragment" parent="Theme.AppCompat.Dialog">
+    <style name="BaseDialogFragment" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowMinWidthMinor">95%</item>
         <item name="android:windowMinWidthMajor">55%</item>
+        <!-- Used for the title and text -->
+        <item name="android:textColorPrimary">@color/slate_600</item>
+        <!-- Used for the background -->
+        <item name="android:background">@color/white</item>
     </style>
 
 </resources>

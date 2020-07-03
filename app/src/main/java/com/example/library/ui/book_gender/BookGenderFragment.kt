@@ -26,8 +26,9 @@ class BookGenderFragment : BaseFragment() {
     }
 
     private fun configureUI() {
-        fab_add_book_gender.setOnClickListener {
 
+        fab_add_book_gender.setOnClickListener {
+            showAddGenderDialog()
         }
     }
 
