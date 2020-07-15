@@ -36,6 +36,7 @@ class AddGenderDialogFragment : DialogFragment(){
                     notes_book_description.getText()
                 )
             )
+            dismiss()
         }
 
         rootView.tv_cancel.setOnClickListener {

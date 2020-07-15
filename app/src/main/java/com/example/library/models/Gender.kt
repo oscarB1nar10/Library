@@ -12,7 +12,7 @@ data class Gender(
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "pk")
-    var pk: Int = -1,
+    var pk: Int = 0,
 
     @ColumnInfo(name = "name")
     var name: String,
