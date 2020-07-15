@@ -24,7 +24,6 @@ class AddBookViewModel
                 emit(it)
             }
         }
-
     }
 
     fun addBook(book: Book){

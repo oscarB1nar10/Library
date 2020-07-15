@@ -12,7 +12,7 @@ fun BookGenderFragment.showAddGenderDialog(){
         }
     }
 
-    addBookGenderDialog.onAddGenderAction = {
-        // TODO("Save Gender into DB and populate RecyclerView")
+    addBookGenderDialog.onAddGenderAction = {gender ->
+        viewModel.addBookGender(gender)
     }
 }

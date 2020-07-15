@@ -1,8 +1,8 @@
-package com.example.library.ui.add_books
+package com.example.library.ui.book_gender
 
-import com.example.library.models.Book
+import com.example.library.models.Gender
 import com.example.library.states.State
-import com.example.library.util.Constants.COLLECTION_BOOKS
+import com.example.library.util.Constants
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import kotlinx.coroutines.Dispatchers
@@ -13,22 +13,22 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Named
 
-class AddBookRepository
+class BookGenderRepository
 @Inject
 constructor(
-    @Named(COLLECTION_BOOKS)
-    private val bookCollection: CollectionReference
+    @Named(Constants.COLLECTION_BOOKS_GENDER)
+    private val genderCollection: CollectionReference
 ){
 
-    suspend fun addBook(book: Book) = flow<State<DocumentReference>>{
+    suspend fun addGender(gender: Gender) = flow<State<DocumentReference>>{
 
         // Emit loading state
         emit(State.loading())
 
-        val postBookReference = bookCollection.add(book).await()
+        val postGenderReference = genderCollection.add(gender).await()
 
         // Emit success state with post reference
-        emit(State.success(postBookReference))
+        emit(State.success(postGenderReference))
 
     }.catch {
         // If exception is throw , emit failed state along with message
