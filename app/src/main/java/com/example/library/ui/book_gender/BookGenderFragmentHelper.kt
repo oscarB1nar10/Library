@@ -7,12 +7,13 @@ fun BookGenderFragment.showAddGenderDialog(){
     val addBookGenderDialog = AddGenderDialogFragment.newInstance()
 
     activity?.let {
-        fragmentManager?.let {
+        requireActivity().supportFragmentManager.let {
             addBookGenderDialog.show(it, BOOK_GENDER_DIALOG)
         }
     }
 
     addBookGenderDialog.onAddGenderAction = {gender ->
-        viewModel.addBookGender(gender)
+        viewModel.gender = gender
+        viewModel.addBookGenderRemoteDB(gender)
     }
 }

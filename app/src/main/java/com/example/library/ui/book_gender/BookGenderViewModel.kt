@@ -13,10 +13,13 @@ constructor(
     private val bookGenderRepository: BookGenderRepository
 )  : ViewModel(){
 
-    private val mutableBookGender: MutableLiveData<Gender> = MutableLiveData()
+    var gender: Gender? = null
+    private val mutableBookGenderRemoteDB: MutableLiveData<Gender> = MutableLiveData()
+    private val mutableBookGenderLocalDB: MutableLiveData<Gender> = MutableLiveData()
 
-    val addBookGenderResponse: LiveData<State<DocumentReference>> =
-        Transformations.switchMap(mutableBookGender) { gender ->
+
+    val addBookGenderResponseRemoteDB: LiveData<State<DocumentReference>> =
+        Transformations.switchMap(mutableBookGenderRemoteDB) { gender ->
             liveData {
                 bookGenderRepository.addGender(gender).collect {
                     emit(it)
@@ -24,7 +27,20 @@ constructor(
             }
         }
 
-    fun addBookGender(gender: Gender){
-        mutableBookGender.value = gender
+    val addBookGenderResponseLocalDB: LiveData<State<Gender>> =
+        Transformations.switchMap(mutableBookGenderRemoteDB) { gender ->
+            liveData {
+                bookGenderRepository.addGenderToLocalDB(gender).collect {
+                    emit(it)
+                }
+            }
+        }
+
+    fun addBookGenderRemoteDB(gender: Gender){
+        mutableBookGenderRemoteDB.value = gender
+    }
+
+    fun addBookGenderLocalDB(){
+        mutableBookGenderLocalDB.value = gender
     }
 }

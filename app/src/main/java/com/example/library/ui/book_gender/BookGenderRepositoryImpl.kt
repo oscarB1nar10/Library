@@ -7,7 +7,6 @@ import com.example.library.util.Constants
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -18,7 +17,6 @@ import javax.inject.Named
 class BookGenderRepositoryImpl
 @Inject
 constructor(
-    @Named(Constants.COLLECTION_BOOKS_GENDER)
     private val genderCollection: CollectionReference,
     private val genderDao: GenderDao
 ): BookGenderRepository{
@@ -38,7 +36,17 @@ constructor(
         emit(State.failed(it.message.toString()))
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun addGenderToLocalDB(gender: Gender): Flow<State<Gender>> {
-       //TODO("Implement DB connection")
-    }
+    override suspend fun addGenderToLocalDB(gender: Gender) = flow<State<Gender>> {
+
+        // Emit loading state
+        emit(State.loading())
+
+        val rowsAffected = genderDao.insert(gender)
+        if (rowsAffected > 0){
+            // Emit success state with Gender
+            emit(State.success(gender))
+        }
+    }.catch {
+        emit(State.failed(it.message.toString()))
+    }.flowOn(Dispatchers.IO)
 }

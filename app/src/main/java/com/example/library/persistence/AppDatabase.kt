@@ -11,10 +11,9 @@ import com.example.library.persistence.daos.GenderDao
 @Database(entities = [
     Book::class,
     Gender::class,
-    Gender::class,
     Author::class,
     Owner::class
-], version = 1)
+], version = 1, exportSchema = false)
 abstract class AppDatabase: RoomDatabase(){
 
     abstract fun genderDao(): GenderDao

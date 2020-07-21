@@ -4,16 +4,19 @@ import android.app.Application
 import androidx.room.Room
 import com.example.library.persistence.AppDatabase
 import com.example.library.persistence.daos.GenderDao
+import com.example.library.ui.book_gender.BookGenderRepository
+import com.example.library.util.Constants
 import com.example.library.util.Constants.DB_NAME
+import com.google.firebase.firestore.CollectionReference
 import dagger.Module
 import dagger.Provides
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
 object AppModule{
 
 
-    @JvmStatic
     @Singleton
     @Provides
     fun provideAppDb(app: Application): AppDatabase {
@@ -23,10 +26,10 @@ object AppModule{
             .build()
     }
 
-    @JvmStatic
     @Singleton
     @Provides
     fun provideGenderDao(db: AppDatabase): GenderDao {
         return db.genderDao()
     }
+
 }
