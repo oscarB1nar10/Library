@@ -67,7 +67,7 @@ class BookGenderRecyclerAdapter(private val interaction: Interaction? = null) :
             }
 
             itemView.edit_book_gender_name.text = item.name
-            itemView.notes_book_description.setText(item.description)
+            itemView.notes_book_description.setText(item.description.toString())
         }
     }
 

@@ -4,6 +4,7 @@ import com.example.library.persistence.daos.GenderDao
 import com.example.library.ui.book_gender.BookGenderRepository
 import com.example.library.ui.book_gender.BookGenderRepositoryImpl
 import com.example.library.util.Constants
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
@@ -31,7 +32,9 @@ object MainModule {
     @Provides
     fun provideBookGenderRepository(@Named(Constants.COLLECTION_BOOKS_GENDER)
                                     genderCollection: CollectionReference,
-                                    genderDao: GenderDao): BookGenderRepository{
-        return BookGenderRepositoryImpl(genderCollection, genderDao)
+                                    genderDao: GenderDao,
+                                    firebaseDb: DatabaseReference
+    ): BookGenderRepository{
+        return BookGenderRepositoryImpl(genderCollection, genderDao, firebaseDb)
     }
 }

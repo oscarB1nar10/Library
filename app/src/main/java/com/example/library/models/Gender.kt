@@ -15,9 +15,9 @@ data class Gender(
     var pk: Int = 0,
 
     @ColumnInfo(name = "name")
-    var name: String,
+    var name: String? = null,
 
     @ColumnInfo(name = "description")
-    var description: String
+    var description: String? = null
 
 ) : Parcelable

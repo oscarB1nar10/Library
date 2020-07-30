@@ -11,15 +11,14 @@ class BookGenderViewModel
 @Inject
 constructor(
     private val bookGenderRepository: BookGenderRepository
-)  : ViewModel(){
+)  : ViewModel() {
 
     var gender: Gender? = null
-    private val mutableBookGenderRemoteDB: MutableLiveData<Gender> = MutableLiveData()
-    private val mutableBookGenderLocalDB: MutableLiveData<Gender> = MutableLiveData()
+    private val mutableSaveBookGender: MutableLiveData<Gender> = MutableLiveData()
+    private val mutableGetBookGender: MutableLiveData<Boolean> = MutableLiveData()
 
-
-    val addBookGenderResponseRemoteDB: LiveData<State<DocumentReference>> =
-        Transformations.switchMap(mutableBookGenderRemoteDB) { gender ->
+    val addBookGenderResponse: LiveData<State<DocumentReference>> =
+        Transformations.switchMap(mutableSaveBookGender) { gender ->
             liveData {
                 bookGenderRepository.addGender(gender).collect {
                     emit(it)
@@ -27,20 +26,27 @@ constructor(
             }
         }
 
-    val addBookGenderResponseLocalDB: LiveData<State<Gender>> =
-        Transformations.switchMap(mutableBookGenderRemoteDB) { gender ->
-            liveData {
-                bookGenderRepository.addGenderToLocalDB(gender).collect {
-                    emit(it)
-                }
+    val getBookGenderResponse: LiveData<State<List<Gender>>> =
+        liveData {
+            bookGenderRepository.getGender().collect {
+                emit(it)
             }
         }
 
-    fun addBookGenderRemoteDB(gender: Gender){
-        mutableBookGenderRemoteDB.value = gender
+    val getBookGenderFirebaseUpdateResponse: LiveData<State<List<Gender>>> =
+        liveData {
+            bookGenderRepository.getGendersFromFirebaseDb().collect {
+                emit(it)
+            }
+        }
+
+
+    fun saveBookGender(gender: Gender){
+        mutableSaveBookGender.value = gender
     }
 
-    fun addBookGenderLocalDB(){
-        mutableBookGenderLocalDB.value = gender
-    }
+    /*fun getBookGenders(){
+        //TODO("Replace code to avoid pass a value as default")
+        mutableGetBookGender.value = true
+    }*/
 }
