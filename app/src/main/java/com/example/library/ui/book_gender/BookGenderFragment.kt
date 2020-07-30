@@ -54,7 +54,7 @@ class BookGenderFragment : BaseFragment(), BookGenderRecyclerAdapter.Interaction
     }
 
     private fun subscribeObservers() {
-        viewModel.addBookGenderResponseRemoteDB.observe(viewLifecycleOwner, Observer {state ->
+        viewModel.addBookGenderResponse.observe(viewLifecycleOwner, Observer {state ->
             when (state) {
                 is State.Loading -> {
                     Log.i("subscribeObservers", "Loading: $state")
@@ -62,7 +62,7 @@ class BookGenderFragment : BaseFragment(), BookGenderRecyclerAdapter.Interaction
 
                 is State.Success -> {
                     Log.i("subscribeObservers", "Success: $state")
-                    viewModel.addBookGenderLocalDB()
+                    //viewModel.getBookGenderResponse
                 }
 
                 is State.Failed -> {
@@ -71,7 +71,7 @@ class BookGenderFragment : BaseFragment(), BookGenderRecyclerAdapter.Interaction
             }
         })
 
-        viewModel.addBookGenderResponseLocalDB.observe(viewLifecycleOwner, Observer {state ->
+        viewModel.getBookGenderResponse.observe(viewLifecycleOwner, Observer {state ->
             when (state) {
                 is State.Loading -> {
                     Log.i("subscribeObservers", "Loading: $state")
@@ -79,7 +79,24 @@ class BookGenderFragment : BaseFragment(), BookGenderRecyclerAdapter.Interaction
 
                 is State.Success -> {
                     Log.i("genderSaved:", "Success: ${state.data}")
-                    //bookGenderRecyclerAdapter.submitList()
+                    bookGenderRecyclerAdapter.submitList(state.data)
+                }
+
+                is State.Failed -> {
+                    Log.i("subscribeObservers", "Failed: $state")
+                }
+            }
+        })
+
+
+        viewModel.getBookGenderFirebaseUpdateResponse.observe(viewLifecycleOwner, Observer {state ->
+            when(state){
+                is State.Loading -> {
+                    Log.i("subscribeObservers", "Loading: $state")
+                }
+
+                is State.Success -> {
+                    Log.i("Gender from Firebase:", "Success: ${state.data}")
                 }
 
                 is State.Failed -> {

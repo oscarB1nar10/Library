@@ -10,5 +10,7 @@ interface BookGenderRepository{
 
     suspend fun addGender(gender: Gender): Flow<State<DocumentReference>>
 
-    suspend fun addGenderToLocalDB(gender: Gender): Flow<State<Gender>>
+    suspend fun getGender(): Flow<State<List<Gender>>>
+
+    suspend fun getGendersFromFirebaseDb(): Flow<State<List<Gender>>>
 }
