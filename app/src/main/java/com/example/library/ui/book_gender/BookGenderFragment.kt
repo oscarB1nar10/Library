@@ -71,15 +71,14 @@ class BookGenderFragment : BaseFragment(), BookGenderRecyclerAdapter.Interaction
             }
         })
 
-        viewModel.getBookGenderResponse.observe(viewLifecycleOwner, Observer {state ->
-            when (state) {
+        viewModel.getBookGenderFirebaseUpdateResponse.observe(viewLifecycleOwner, Observer {state ->
+            when(state){
                 is State.Loading -> {
                     Log.i("subscribeObservers", "Loading: $state")
                 }
 
                 is State.Success -> {
-                    Log.i("genderSaved:", "Success: ${state.data}")
-                    bookGenderRecyclerAdapter.submitList(state.data)
+                    viewModel.saveBookGendersInLocalDB( state.data)
                 }
 
                 is State.Failed -> {
@@ -88,15 +87,15 @@ class BookGenderFragment : BaseFragment(), BookGenderRecyclerAdapter.Interaction
             }
         })
 
-
-        viewModel.getBookGenderFirebaseUpdateResponse.observe(viewLifecycleOwner, Observer {state ->
+        viewModel.getSaveBookGendersInLocalDdResponse.observe(viewLifecycleOwner, Observer {state ->
             when(state){
                 is State.Loading -> {
                     Log.i("subscribeObservers", "Loading: $state")
                 }
 
                 is State.Success -> {
-                    Log.i("Gender from Firebase:", "Success: ${state.data}")
+                   // After remote data synchronized with local data
+                    bookGenderRecyclerAdapter.submitList(state.data)
                 }
 
                 is State.Failed -> {

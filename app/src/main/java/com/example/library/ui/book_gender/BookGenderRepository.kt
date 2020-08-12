@@ -8,7 +8,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface BookGenderRepository{
 
-    suspend fun addGender(gender: Gender): Flow<State<DocumentReference>>
+    suspend fun addGender(gender: Gender): Flow<State<Boolean>>
+
+    suspend fun saveGenderInLocalDB(genders: List<Gender>): Flow<State<List<Gender>>>
 
     suspend fun getGender(): Flow<State<List<Gender>>>
 

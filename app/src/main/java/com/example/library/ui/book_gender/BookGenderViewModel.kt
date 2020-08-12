@@ -3,7 +3,6 @@ package com.example.library.ui.book_gender
 import androidx.lifecycle.*
 import com.example.library.models.Gender
 import com.example.library.states.State
-import com.google.firebase.firestore.DocumentReference
 import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
@@ -15,21 +14,14 @@ constructor(
 
     var gender: Gender? = null
     private val mutableSaveBookGender: MutableLiveData<Gender> = MutableLiveData()
-    private val mutableGetBookGender: MutableLiveData<Boolean> = MutableLiveData()
+    private val mutableBookGenderInLocalDB: MutableLiveData<List<Gender>> = MutableLiveData()
 
-    val addBookGenderResponse: LiveData<State<DocumentReference>> =
+    val addBookGenderResponse: LiveData<State<Boolean>> =
         Transformations.switchMap(mutableSaveBookGender) { gender ->
             liveData {
                 bookGenderRepository.addGender(gender).collect {
                     emit(it)
                 }
-            }
-        }
-
-    val getBookGenderResponse: LiveData<State<List<Gender>>> =
-        liveData {
-            bookGenderRepository.getGender().collect {
-                emit(it)
             }
         }
 
@@ -40,13 +32,22 @@ constructor(
             }
         }
 
+    val getSaveBookGendersInLocalDdResponse: LiveData<State<List<Gender>>> =
+        Transformations.switchMap(mutableBookGenderInLocalDB){genders ->
+        liveData {
+            bookGenderRepository.saveGenderInLocalDB(genders).collect{
+                emit(it)
+            }
+        }
+    }
+
 
     fun saveBookGender(gender: Gender){
         mutableSaveBookGender.value = gender
     }
 
-    /*fun getBookGenders(){
-        //TODO("Replace code to avoid pass a value as default")
-        mutableGetBookGender.value = true
-    }*/
+    fun saveBookGendersInLocalDB(genders: List<Gender>){
+        mutableBookGenderInLocalDB.value = genders
+    }
+
 }

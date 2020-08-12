@@ -8,16 +8,14 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.getValue
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
+@ExperimentalCoroutinesApi
 class BookGenderRepositoryImpl
 @Inject
 constructor(
@@ -26,19 +24,54 @@ constructor(
     private val firebaseDb: DatabaseReference
 ): BookGenderRepository{
 
-    override suspend fun addGender(gender: Gender) = flow<State<DocumentReference>>{
+    override suspend fun addGender(gender: Gender) = flow<State<Boolean>>{
 
         // Emit loading state
         emit(State.loading())
 
-        val postGenderReference = genderCollection.add(gender).await()
+        // Save in local DB
+        genderDao.insert(gender)
 
-        postGenderReference?.let {
-            val rowsAffected = genderDao.insert(gender)
-            if(rowsAffected > 0){
-                // Emit success state with post reference
-                emit(State.success(postGenderReference))
-            }
+        // Get the last one Gender (The above), the difference is the ID
+        val gendersDB = genderDao.getForFirebasePurposes()
+        val genderToUpdate = gendersDB.last()
+
+        firebaseDb.child(COLLECTION_BOOKS_GENDER).child(genderToUpdate.pk.toString()).setValue(genderToUpdate)
+
+        emit(State.success(true))
+
+    }.catch {
+        // If exception is throw , emit failed state along with message
+        emit(State.failed(it.message.toString()))
+    }.flowOn(Dispatchers.IO)
+
+
+    override suspend fun saveGenderInLocalDB(genders: List<Gender>) = flow<State<List<Gender>>>{
+
+        emit(State.loading())
+
+        saveRemoteGendersIntoLocalDB(genders)
+
+        val gendersDB = genderDao.get()
+        gendersDB.collect{
+            emit(State.success(it)) }
+
+        emit(State.success(genders))
+
+    }.catch {
+        emit(State.failed(it.message.toString()))
+    }.flowOn(Dispatchers.IO)
+
+
+    override suspend fun getGendersFromFirebaseDb() = flow {
+
+        // Emit loading state
+        emit(State.loading())
+
+        val gender = firebaseDb.child(COLLECTION_BOOKS_GENDER).listen<Gender>()
+
+        gender.collect{
+            emit(it)
         }
 
     }.catch {
@@ -58,24 +91,15 @@ constructor(
 
     }
 
-    override suspend fun getGendersFromFirebaseDb() = flow<State<List<Gender>>>{
 
-        // Emit loading state
-        emit(State.loading())
+    private fun saveRemoteGendersIntoLocalDB(genders: List<Gender>){
+        genderDao.deleteGenders()
+        genderDao.insertGenders(genders)
+    }
 
-        val gender = firebaseDb.child(COLLECTION_BOOKS_GENDER).listen<Gender>()
-
-        gender.collect{
-            emit(it)
-        }
-
-    }.catch {
-        // If exception is throw , emit failed state along with message
-        emit(State.failed(it.message.toString()))
-    }.flowOn(Dispatchers.IO)
 
     @ExperimentalCoroutinesApi
-    inline fun <reified T> DatabaseReference.listen(): Flow<State<List<T>>> =
+    inline fun <reified T : Any> DatabaseReference.listen(): Flow<State<List<T>>> =
         callbackFlow {
             val valueListener = object : ValueEventListener {
                 override fun onCancelled(databaseError: DatabaseError) {
@@ -84,16 +108,19 @@ constructor(
 
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     try {
-                        val value = dataSnapshot.getValue<List<T>>()
-                        value?.let {
-                            offer(State.Success(value))
+                        val listT: MutableList<T> = mutableListOf()
+                        dataSnapshot.children.mapNotNullTo(listT){
+                            it.getValue<T>(T::class.java)
                         }
+
+                        offer(State.Success(listT))
+
                     } catch (exp: Exception) {
                         if (!isClosedForSend) offer(State.failed(exp.message.toString()))
                     }
                 }
             }
-            addValueEventListener(valueListener)
+            addListenerForSingleValueEvent(valueListener)
 
             awaitClose { removeEventListener(valueListener) }
         }
