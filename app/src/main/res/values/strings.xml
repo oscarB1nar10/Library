@@ -36,6 +36,9 @@
     <string name="add_book_gender_gender_name">Gender Name</string>
     <!-- GenderDialog -->
 
+    <!-- Auth -->
+    <string name="auth_login_error">Error trying to login</string>
+
 
 
 </resources>
