@@ -130,6 +130,11 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage-ktx:19.1.1'
     implementation 'com.google.firebase:firebase-firestore-ktx:21.5.0'
 
+    // Firebase authentication
+    implementation 'com.google.firebase:firebase-auth:19.3.2'
+    // Google sign-in
+    implementation 'com.google.android.gms:play-services-auth:18.1.0'
+
     // Round images
     implementation "com.makeramen:roundedimageview:$rootProject.roundedImageView"
 }
