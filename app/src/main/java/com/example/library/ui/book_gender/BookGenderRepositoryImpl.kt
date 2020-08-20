@@ -1,5 +1,6 @@
 package com.example.library.ui.book_gender
 
+import com.example.library.di.main.CollectionBooksGender
 import com.example.library.models.Gender
 import com.example.library.persistence.daos.GenderDao
 import com.example.library.states.State
@@ -19,7 +20,7 @@ import javax.inject.Inject
 class BookGenderRepositoryImpl
 @Inject
 constructor(
-    private val genderCollection: CollectionReference,
+    @CollectionBooksGender private val genderCollection: CollectionReference,
     private val genderDao: GenderDao,
     private val firebaseDb: DatabaseReference
 ): BookGenderRepository{

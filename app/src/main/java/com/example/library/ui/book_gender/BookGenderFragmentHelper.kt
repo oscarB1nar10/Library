@@ -13,7 +13,7 @@ fun BookGenderFragment.showAddGenderDialog(){
     }
 
     addBookGenderDialog.onAddGenderAction = {gender ->
-        viewModel.gender = gender
-        viewModel.saveBookGender(gender)
+        bookGenderViewModel.gender = gender
+        bookGenderViewModel.saveBookGender(gender)
     }
 }

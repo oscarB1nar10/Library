@@ -9,31 +9,37 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
-import javax.inject.Named
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
+import javax.inject.Qualifier
+
+@Qualifier
+annotation class CollectionBooks
+
+@Qualifier
+annotation class CollectionBooksGender
 
 @Module
+@InstallIn(ActivityComponent::class)
 object MainModule {
 
-    @MainScope
+    @CollectionBooks
     @Provides
-    @Named(Constants.COLLECTION_BOOKS)
     fun provideFirebaseInstanceCollectionBooks(): CollectionReference{
         return FirebaseFirestore.getInstance().collection(Constants.COLLECTION_BOOKS)
     }
 
-    @MainScope
+    @CollectionBooksGender
     @Provides
-    @Named(Constants.COLLECTION_BOOKS_GENDER)
     fun provideFirebaseInstanceBooksGender(): CollectionReference{
         return FirebaseFirestore.getInstance().collection(Constants.COLLECTION_BOOKS_GENDER)
     }
 
-    @MainScope
     @Provides
-    fun provideBookGenderRepository(@Named(Constants.COLLECTION_BOOKS_GENDER)
-                                    genderCollection: CollectionReference,
-                                    genderDao: GenderDao,
-                                    firebaseDb: DatabaseReference
+    fun provideBookGenderRepository(
+        @CollectionBooksGender genderCollection: CollectionReference,
+        genderDao: GenderDao,
+        firebaseDb: DatabaseReference
     ): BookGenderRepository{
         return BookGenderRepositoryImpl(genderCollection, genderDao, firebaseDb)
     }

@@ -12,9 +12,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_auth_layout.*
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class AuthActivity : BaseActivity() {
 
     companion object{

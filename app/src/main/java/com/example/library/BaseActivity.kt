@@ -1,10 +1,10 @@
 package com.example.library
 
 import android.os.Bundle
-import dagger.android.support.DaggerAppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.layout_toolbar_component.*
 
-abstract class BaseActivity: DaggerAppCompatActivity(){
+abstract class BaseActivity: AppCompatActivity(){
 
     abstract fun getLayoutResourceId(): Int
 
