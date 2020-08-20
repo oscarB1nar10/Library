@@ -1,8 +1,8 @@
 package com.example.library.ui.add_books
 
+import com.example.library.di.main.CollectionBooks
 import com.example.library.models.Book
 import com.example.library.states.State
-import com.example.library.util.Constants.COLLECTION_BOOKS
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import kotlinx.coroutines.Dispatchers
@@ -11,13 +11,11 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-import javax.inject.Named
 
 class AddBookRepository
 @Inject
 constructor(
-    @Named(COLLECTION_BOOKS)
-    private val bookCollection: CollectionReference
+    @CollectionBooks private val bookCollection: CollectionReference
 ){
 
     suspend fun addBook(book: Book) = flow<State<DocumentReference>>{

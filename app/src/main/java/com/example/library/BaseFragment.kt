@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import dagger.android.support.DaggerFragment
+import androidx.fragment.app.Fragment
 
-abstract class BaseFragment : DaggerFragment(){
+abstract class BaseFragment : Fragment(){
 
     abstract fun getLayoutResourceId(): Int
 

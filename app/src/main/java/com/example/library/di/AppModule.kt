@@ -4,19 +4,18 @@ import android.app.Application
 import androidx.room.Room
 import com.example.library.persistence.AppDatabase
 import com.example.library.persistence.daos.GenderDao
-import com.example.library.ui.book_gender.BookGenderRepository
-import com.example.library.util.Constants
 import com.example.library.util.Constants.DB_NAME
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
-import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.ktx.Firebase
 import dagger.Module
 import dagger.Provides
-import javax.inject.Named
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ApplicationComponent
 import javax.inject.Singleton
 
 @Module
+@InstallIn(ApplicationComponent::class)
 object AppModule{
 
 

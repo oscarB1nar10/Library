@@ -5,27 +5,22 @@ import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.library.BaseFragment
 import com.example.library.R
 import com.example.library.models.Gender
 import com.example.library.states.State
 import com.example.library.ui.adapters.BookGenderRecyclerAdapter
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_book_gender.*
-import javax.inject.Inject
 
 
+@AndroidEntryPoint
 class BookGenderFragment : BaseFragment(), BookGenderRecyclerAdapter.Interaction {
 
-    @Inject
-    lateinit var viewModelProvider: ViewModelProvider.Factory
+    val bookGenderViewModel: BookGenderViewModel by viewModels()
 
     lateinit var bookGenderRecyclerAdapter: BookGenderRecyclerAdapter
-
-    internal val viewModel: BookGenderViewModel by viewModels {
-        viewModelProvider
-    }
 
     override fun getLayoutResourceId(): Int = R.layout.fragment_book_gender
 
@@ -54,7 +49,7 @@ class BookGenderFragment : BaseFragment(), BookGenderRecyclerAdapter.Interaction
     }
 
     private fun subscribeObservers() {
-        viewModel.addBookGenderResponse.observe(viewLifecycleOwner, Observer {state ->
+        bookGenderViewModel.addBookGenderResponse.observe(viewLifecycleOwner, Observer {state ->
             when (state) {
                 is State.Loading -> {
                     Log.i("subscribeObservers", "Loading: $state")
@@ -71,14 +66,14 @@ class BookGenderFragment : BaseFragment(), BookGenderRecyclerAdapter.Interaction
             }
         })
 
-        viewModel.getBookGenderFirebaseUpdateResponse.observe(viewLifecycleOwner, Observer {state ->
+        bookGenderViewModel.getBookGenderFirebaseUpdateResponse.observe(viewLifecycleOwner, Observer {state ->
             when(state){
                 is State.Loading -> {
                     Log.i("subscribeObservers", "Loading: $state")
                 }
 
                 is State.Success -> {
-                    viewModel.saveBookGendersInLocalDB( state.data)
+                    bookGenderViewModel.saveBookGendersInLocalDB( state.data)
                 }
 
                 is State.Failed -> {
@@ -87,7 +82,7 @@ class BookGenderFragment : BaseFragment(), BookGenderRecyclerAdapter.Interaction
             }
         })
 
-        viewModel.getSaveBookGendersInLocalDdResponse.observe(viewLifecycleOwner, Observer {state ->
+        bookGenderViewModel.getSaveBookGendersInLocalDdResponse.observe(viewLifecycleOwner, Observer {state ->
             when(state){
                 is State.Loading -> {
                     Log.i("subscribeObservers", "Loading: $state")

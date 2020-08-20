@@ -1,15 +1,17 @@
 package com.example.library.ui.book_gender
 
+import androidx.hilt.Assisted
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.example.library.models.Gender
 import com.example.library.states.State
 import kotlinx.coroutines.flow.collect
-import javax.inject.Inject
 
 class BookGenderViewModel
-@Inject
+@ViewModelInject
 constructor(
-    private val bookGenderRepository: BookGenderRepository
+    private val bookGenderRepository: BookGenderRepository,
+    @Assisted private val savedStateHandle: SavedStateHandle
 )  : ViewModel() {
 
     var gender: Gender? = null
