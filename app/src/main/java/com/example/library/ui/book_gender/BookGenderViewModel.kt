@@ -17,6 +17,7 @@ constructor(
     var gender: Gender? = null
     private val mutableSaveBookGender: MutableLiveData<Gender> = MutableLiveData()
     private val mutableBookGenderInLocalDB: MutableLiveData<List<Gender>> = MutableLiveData()
+    private val mutableRemoveBookGender: MutableLiveData<Gender> = MutableLiveData()
 
     val addBookGenderResponse: LiveData<State<Boolean>> =
         Transformations.switchMap(mutableSaveBookGender) { gender ->
@@ -37,11 +38,22 @@ constructor(
     val getSaveBookGendersInLocalDdResponse: LiveData<State<List<Gender>>> =
         Transformations.switchMap(mutableBookGenderInLocalDB){genders ->
         liveData {
-            bookGenderRepository.saveGenderInLocalDB(genders).collect{
+            bookGenderRepository.saveGenderInLocalDB(genders)
+                .collect{
                 emit(it)
             }
         }
     }
+
+    val removeBookGenderResponse: LiveData<State<Boolean>> =
+        Transformations.switchMap(mutableRemoveBookGender){gender ->
+            liveData(viewModelScope.coroutineContext) {
+                bookGenderRepository.removeBookGender(gender)
+                    .collect{
+                        emit(it)
+                    }
+            }
+        }
 
 
     fun saveBookGender(gender: Gender){
@@ -50,6 +62,11 @@ constructor(
 
     fun saveBookGendersInLocalDB(genders: List<Gender>){
         mutableBookGenderInLocalDB.value = genders
+    }
+
+    //EXAMPLE PURPOSE
+    fun removeBookGender(gender: Gender){
+        mutableRemoveBookGender.value = gender
     }
 
 }
