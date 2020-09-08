@@ -63,7 +63,6 @@ constructor(
         emit(State.failed(it.message.toString()))
     }.flowOn(Dispatchers.IO)
 
-
     override suspend fun getGendersFromFirebaseDb() = flow {
 
         // Emit loading state
@@ -74,6 +73,23 @@ constructor(
         gender.collect{
             emit(it)
         }
+
+    }.catch {
+        // If exception is throw , emit failed state along with message
+        emit(State.failed(it.message.toString()))
+    }  .flowOn(Dispatchers.IO)
+
+
+    override suspend fun removeBookGender(gender: Gender) = flow<State<Boolean>> {
+        // Emit loading state
+        emit(State.loading())
+
+        // Remove Gender
+        val genderDeleted = genderDao.delete(gender) == 1
+
+        firebaseDb.child(COLLECTION_BOOKS_GENDER).child(gender.pk.toString()).removeValue()
+
+        if(genderDeleted) emit(State.success(genderDeleted)) else emit(State.success(genderDeleted))
 
     }.catch {
         // If exception is throw , emit failed state along with message
@@ -91,6 +107,12 @@ constructor(
         }
 
     }
+        .flowOn(Dispatchers.Default)
+        .conflate()
+        .catch {
+            // If exception is throw , emit failed state along with message
+            emit(State.failed(it.message.toString()))
+        }
 
 
     private fun saveRemoteGendersIntoLocalDB(genders: List<Gender>){

@@ -3,6 +3,7 @@ package com.example.library.ui.book_gender
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -98,9 +99,26 @@ class BookGenderFragment : BaseFragment(), BookGenderRecyclerAdapter.Interaction
                 }
             }
         })
+
+        bookGenderViewModel.removeBookGenderResponse.observe(viewLifecycleOwner, Observer {state ->
+            when(state){
+                is State.Loading -> {
+                    Log.i("subscribeObservers", "Loading: $state")
+                }
+
+                is State.Success -> {
+                    Toast.makeText(activity, "Gender removed", Toast.LENGTH_LONG).show()
+                }
+
+                is State.Failed -> {
+                    Log.i("subscribeObservers", "Failed: $state")
+                }
+            }
+        })
     }
 
-    override fun onItemSelected(position: Int, item: Gender) {
+    override fun onItemSelected(position: Int, gender: Gender) {
         //TODO("Not yet implemented")
+        bookGenderViewModel.removeBookGender(gender)
     }
 }

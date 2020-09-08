@@ -13,6 +13,9 @@ interface GenderDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertGenders(gender: List<Gender>)
 
+    @Delete
+    fun delete(gender: Gender): Int
+
     @Query("SELECT * FROM gender")
     fun get(): Flow<List<Gender>>
 
