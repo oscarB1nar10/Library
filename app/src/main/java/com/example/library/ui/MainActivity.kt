@@ -7,8 +7,11 @@ import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.example.library.BaseActivity
 import com.example.library.R
+import com.example.library.navigation.RootCoordinator
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
@@ -17,12 +20,17 @@ class MainActivity : BaseActivity() {
         Navigation.findNavController(this, R.id.my_nav_host_fragment)
     }
 
+    @Inject lateinit var coordinator: RootCoordinator
+
+    @Inject lateinit var mGoogleSignInClient: GoogleSignInClient
+
     override fun getLayoutResourceId() = R.layout.activity_main
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setupDrawerLayout()
+        configureUI()
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -32,6 +40,18 @@ class MainActivity : BaseActivity() {
     private fun setupDrawerLayout(){
         nav_view.setupWithNavController(navController)
         NavigationUI.setupActionBarWithNavController(this, navController, drawer_layout)
+    }
+
+    private fun configureUI() {
+        nav_view.menu.findItem(R.id.logout).setOnMenuItemClickListener {
+            logout()
+            true
+        }
+    }
+
+    private fun logout(){
+        mGoogleSignInClient.signOut()
+        coordinator.navigateToAuth()
     }
 
     override fun onBackPressed() {

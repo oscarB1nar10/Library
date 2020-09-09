@@ -9,4 +9,9 @@
         android:id="@id/addBooksFragment"
         android:icon="@drawable/ic_library_add"
         android:title="@string/menu_add_books" />
+
+    <item
+        android:id="@+id/logout"
+        android:icon="@drawable/ic_baseline_chevron_left"
+        android:title="@string/menu_log_out"/>
 </menu>

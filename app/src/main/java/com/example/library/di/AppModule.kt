@@ -18,7 +18,6 @@ import javax.inject.Singleton
 @InstallIn(ApplicationComponent::class)
 object AppModule{
 
-
     @Singleton
     @Provides
     fun provideAppDb(app: Application): AppDatabase {

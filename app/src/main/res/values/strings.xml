@@ -4,6 +4,7 @@
     <!-- MainActivity -->
     <string name="menu_all_books">List of books</string>
     <string name="menu_add_books">Add books</string>
+    <string name="menu_log_out">Log out</string>
     <string name="menu_search_filter">Filter</string>
     <string name="menu_search_search">Search</string>
 
