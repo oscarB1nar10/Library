@@ -9,4 +9,8 @@ constructor(private val navigator: Navigator){
     fun showDashboard() {
         navigator.showDashboard()
     }
+
+    fun navigateToAuth(){
+        navigator.showAuthScreen()
+    }
 }

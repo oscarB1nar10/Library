@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import com.example.library.ui.MainActivity
+import com.example.library.ui.auth.AuthActivity
 import javax.inject.Inject
 
 class Navigator
@@ -14,5 +15,11 @@ constructor(context: Context){
 
     fun showDashboard(){
         activity.startActivity(Intent(activity, MainActivity::class.java))
+    }
+
+    fun showAuthScreen(){
+        activity.startActivity(Intent(activity, AuthActivity::class.java).also {
+            it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        })
     }
 }

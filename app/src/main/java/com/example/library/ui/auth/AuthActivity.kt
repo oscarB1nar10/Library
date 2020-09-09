@@ -38,6 +38,15 @@ class AuthActivity : BaseActivity() {
 
     }
 
+    override fun onStart() {
+        super.onStart()
+        // Check if user is signed in (non-null)
+        val account: GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(this)
+        account?.let {
+            coordinator.showDashboard()
+        }
+    }
+
     private fun configureUi() {
         sign_in_button.setOnClickListener {
             signInGoogle()
