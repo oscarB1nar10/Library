@@ -15,40 +15,41 @@ constructor(
 )  : ViewModel() {
 
     var gender: Gender? = null
-    private val mutableSaveBookGender: MutableLiveData<Gender> = MutableLiveData()
-    private val mutableBookGenderInLocalDB: MutableLiveData<List<Gender>> = MutableLiveData()
-    private val mutableRemoveBookGender: MutableLiveData<Gender> = MutableLiveData()
+    private val saveBookGender: MutableLiveData<Gender> = MutableLiveData()
+    private val getRemoteGenders:  MutableLiveData<Boolean> = MutableLiveData()
+    private val synchronizeRemoteAndLocalGenders: MutableLiveData<List<Gender>> = MutableLiveData()
+    private val removeGender: MutableLiveData<Gender> = MutableLiveData()
 
-    val addBookGenderResponse: LiveData<State<Boolean>> =
-        Transformations.switchMap(mutableSaveBookGender) { gender ->
+    val saveGenderResponse: LiveData<State<Boolean>> =
+        Transformations.switchMap(saveBookGender) { gender ->
             liveData {
-                bookGenderRepository.addGender(gender).collect {
+                bookGenderRepository.saveGender(gender).collect {
                     emit(it)
                 }
             }
         }
 
-    val getBookGenderFirebaseUpdateResponse: LiveData<State<List<Gender>>> =
+    val getRemoteGendersResponse: LiveData<State<List<Gender>>> =
         liveData {
-            bookGenderRepository.getGendersFromFirebaseDb().collect {
+            bookGenderRepository.getRemoteGenders().collect {
                 emit(it)
             }
         }
 
-    val getSaveBookGendersInLocalDdResponse: LiveData<State<List<Gender>>> =
-        Transformations.switchMap(mutableBookGenderInLocalDB){genders ->
+    val synchronizeRemoteAndLocalGendersResponse: LiveData<State<List<Gender>>> =
+        Transformations.switchMap(synchronizeRemoteAndLocalGenders){genders ->
         liveData {
-            bookGenderRepository.saveGenderInLocalDB(genders)
+            bookGenderRepository.synchronizeRemoteAndLocalGenders(genders)
                 .collect{
                 emit(it)
             }
         }
     }
 
-    val removeBookGenderResponse: LiveData<State<Boolean>> =
-        Transformations.switchMap(mutableRemoveBookGender){gender ->
+    val removeGenderResponse: LiveData<State<Boolean>> =
+        Transformations.switchMap(removeGender){gender ->
             liveData(viewModelScope.coroutineContext) {
-                bookGenderRepository.removeBookGender(gender)
+                bookGenderRepository.removeGender(gender)
                     .collect{
                         emit(it)
                     }
@@ -56,17 +57,21 @@ constructor(
         }
 
 
-    fun saveBookGender(gender: Gender){
-        mutableSaveBookGender.value = gender
+    fun saveGender(gender: Gender){
+        saveBookGender.value = gender
     }
 
     fun saveBookGendersInLocalDB(genders: List<Gender>){
-        mutableBookGenderInLocalDB.value = genders
+        synchronizeRemoteAndLocalGenders.value = genders
+    }
+
+    fun getRemoteGenders(fromRemote: Boolean = true){
+        getRemoteGenders.value = fromRemote
     }
 
     //EXAMPLE PURPOSE
     fun removeBookGender(gender: Gender){
-        mutableRemoveBookGender.value = gender
+        removeGender.value = gender
     }
 
 }

@@ -37,8 +37,9 @@ class BookGenderFragment : BaseFragment(), BookGenderRecyclerAdapter.Interaction
         setupRecyclerAdapter()
 
         fab_add_book_gender.setOnClickListener {
-            showAddGenderDialog()
-        }
+            showAddGenderDialog() }
+
+        bookGenderViewModel.getRemoteGenders()
     }
 
     private fun setupRecyclerAdapter() {
@@ -50,7 +51,7 @@ class BookGenderFragment : BaseFragment(), BookGenderRecyclerAdapter.Interaction
     }
 
     private fun subscribeObservers() {
-        bookGenderViewModel.addBookGenderResponse.observe(viewLifecycleOwner, Observer {state ->
+        bookGenderViewModel.saveGenderResponse.observe(viewLifecycleOwner, Observer {state ->
             when (state) {
                 is State.Loading -> {
                     Log.i("subscribeObservers", "Loading: $state")
@@ -67,7 +68,7 @@ class BookGenderFragment : BaseFragment(), BookGenderRecyclerAdapter.Interaction
             }
         })
 
-        bookGenderViewModel.getBookGenderFirebaseUpdateResponse.observe(viewLifecycleOwner, Observer {state ->
+        bookGenderViewModel.getRemoteGendersResponse.observe(viewLifecycleOwner, Observer {state ->
             when(state){
                 is State.Loading -> {
                     Log.i("subscribeObservers", "Loading: $state")
@@ -83,7 +84,7 @@ class BookGenderFragment : BaseFragment(), BookGenderRecyclerAdapter.Interaction
             }
         })
 
-        bookGenderViewModel.getSaveBookGendersInLocalDdResponse.observe(viewLifecycleOwner, Observer {state ->
+        bookGenderViewModel.synchronizeRemoteAndLocalGendersResponse.observe(viewLifecycleOwner, Observer {state ->
             when(state){
                 is State.Loading -> {
                     Log.i("subscribeObservers", "Loading: $state")
@@ -100,7 +101,7 @@ class BookGenderFragment : BaseFragment(), BookGenderRecyclerAdapter.Interaction
             }
         })
 
-        bookGenderViewModel.removeBookGenderResponse.observe(viewLifecycleOwner, Observer {state ->
+        bookGenderViewModel.removeGenderResponse.observe(viewLifecycleOwner, Observer {state ->
             when(state){
                 is State.Loading -> {
                     Log.i("subscribeObservers", "Loading: $state")
