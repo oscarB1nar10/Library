@@ -25,7 +25,7 @@ constructor(
     private val firebaseDb: DatabaseReference
 ): BookGenderRepository{
 
-    override suspend fun addGender(gender: Gender) = flow<State<Boolean>>{
+    override suspend fun saveGender(gender: Gender) = flow<State<Boolean>>{
 
         // Emit loading state
         emit(State.loading())
@@ -47,7 +47,7 @@ constructor(
     }.flowOn(Dispatchers.IO)
 
 
-    override suspend fun saveGenderInLocalDB(genders: List<Gender>) = flow<State<List<Gender>>>{
+    override suspend fun synchronizeRemoteAndLocalGenders(genders: List<Gender>) = flow<State<List<Gender>>>{
 
         emit(State.loading())
 
@@ -63,7 +63,7 @@ constructor(
         emit(State.failed(it.message.toString()))
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun getGendersFromFirebaseDb() = flow {
+    override suspend fun getRemoteGenders() = flow {
 
         // Emit loading state
         emit(State.loading())
@@ -80,7 +80,7 @@ constructor(
     }  .flowOn(Dispatchers.IO)
 
 
-    override suspend fun removeBookGender(gender: Gender) = flow<State<Boolean>> {
+    override suspend fun removeGender(gender: Gender) = flow<State<Boolean>> {
         // Emit loading state
         emit(State.loading())
 
@@ -95,24 +95,6 @@ constructor(
         // If exception is throw , emit failed state along with message
         emit(State.failed(it.message.toString()))
     }.flowOn(Dispatchers.IO)
-
-
-    override suspend fun getGender() = flow<State<List<Gender>>> {
-        // Emit loading state
-        emit(State.loading())
-
-        //TODO(Validate networks state to get values from local or remote)
-        genderDao.get().collect {
-            emit(State.success(it))
-        }
-
-    }
-        .flowOn(Dispatchers.Default)
-        .conflate()
-        .catch {
-            // If exception is throw , emit failed state along with message
-            emit(State.failed(it.message.toString()))
-        }
 
 
     private fun saveRemoteGendersIntoLocalDB(genders: List<Gender>){
