@@ -5,13 +5,12 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.library.BaseFragment
 import com.example.library.R
 import com.example.library.models.Gender
-import com.example.library.states.State
 import com.example.library.ui.adapters.BookGenderRecyclerAdapter
+import com.example.library.util.observe
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_book_gender.*
 
@@ -51,75 +50,34 @@ class BookGenderFragment : BaseFragment(), BookGenderRecyclerAdapter.Interaction
     }
 
     private fun subscribeObservers() {
-        bookGenderViewModel.saveGenderResponse.observe(viewLifecycleOwner, Observer {state ->
-            when (state) {
-                is State.Loading -> {
-                    Log.i("subscribeObservers", "Loading: $state")
-                }
 
-                is State.Success -> {
-                    Log.i("subscribeObservers", "Success: $state")
-                    //viewModel.getBookGenderResponse
-                }
+        observe(bookGenderViewModel.saveGenderResponse, ::handleSaveGenderResponse)
 
-                is State.Failed -> {
-                    Log.i("subscribeObservers", "Failed: $state")
-                }
-            }
-        })
+        observe(bookGenderViewModel.getRemoteGendersResponse, ::handleGetRemoteGendersResponse)
 
-        bookGenderViewModel.getRemoteGendersResponse.observe(viewLifecycleOwner, Observer {state ->
-            when(state){
-                is State.Loading -> {
-                    Log.i("subscribeObservers", "Loading: $state")
-                }
+        observe(bookGenderViewModel.synchronizeRemoteAndLocalGendersResponse, ::handleSynchronizeRemoteAndLocalGendersResponse)
 
-                is State.Success -> {
-                    bookGenderViewModel.saveBookGendersInLocalDB( state.data)
-                }
+        observe(bookGenderViewModel.removeGenderResponse, ::handleRemoveGenderResponse)
+    }
 
-                is State.Failed -> {
-                    Log.i("subscribeObservers", "Failed: $state")
-                }
-            }
-        })
+    private fun handleSaveGenderResponse(wasDataSaved: Boolean){
+        Log.i("saveGenderR", "Success: $wasDataSaved")
+    }
 
-        bookGenderViewModel.synchronizeRemoteAndLocalGendersResponse.observe(viewLifecycleOwner, Observer {state ->
-            when(state){
-                is State.Loading -> {
-                    Log.i("subscribeObservers", "Loading: $state")
-                }
+    private fun handleGetRemoteGendersResponse(genders: List<Gender>){
+        bookGenderViewModel.saveBookGendersInLocalDB(genders)
+    }
 
-                is State.Success -> {
-                   // After remote data synchronized with local data
-                    bookGenderRecyclerAdapter.submitList(state.data)
-                }
+    private fun handleSynchronizeRemoteAndLocalGendersResponse(genders: List<Gender>){
+        bookGenderRecyclerAdapter.submitList(genders)
+    }
 
-                is State.Failed -> {
-                    Log.i("subscribeObservers", "Failed: $state")
-                }
-            }
-        })
-
-        bookGenderViewModel.removeGenderResponse.observe(viewLifecycleOwner, Observer {state ->
-            when(state){
-                is State.Loading -> {
-                    Log.i("subscribeObservers", "Loading: $state")
-                }
-
-                is State.Success -> {
-                    Toast.makeText(activity, "Gender removed", Toast.LENGTH_LONG).show()
-                }
-
-                is State.Failed -> {
-                    Log.i("subscribeObservers", "Failed: $state")
-                }
-            }
-        })
+    private fun handleRemoveGenderResponse(wasDeleted: Boolean){
+        Toast.makeText(activity, "Gender removed", Toast.LENGTH_LONG).show()
     }
 
     override fun onItemSelected(position: Int, gender: Gender) {
-        //TODO("Not yet implemented")
+        //TODO("Not implemented yet")
         bookGenderViewModel.removeBookGender(gender)
     }
 }
