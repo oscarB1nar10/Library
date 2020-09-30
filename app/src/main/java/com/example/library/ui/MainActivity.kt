@@ -2,15 +2,18 @@ package com.example.library.ui
 
 import android.os.Bundle
 import androidx.core.view.GravityCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.example.library.BaseActivity
 import com.example.library.R
 import com.example.library.navigation.RootCoordinator
+import com.example.library.ui.auth.UserPreferencesPresenter
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -23,6 +26,8 @@ class MainActivity : BaseActivity() {
     @Inject lateinit var coordinator: RootCoordinator
 
     @Inject lateinit var mGoogleSignInClient: GoogleSignInClient
+
+    @Inject lateinit var userPreferencesPresenter: UserPreferencesPresenter
 
     override fun getLayoutResourceId() = R.layout.activity_main
 
@@ -44,6 +49,9 @@ class MainActivity : BaseActivity() {
 
     private fun configureUI() {
         nav_view.menu.findItem(R.id.logout).setOnMenuItemClickListener {
+            lifecycleScope.launch {
+                userPreferencesPresenter.removeUserToken()
+            }
             logout()
             true
         }

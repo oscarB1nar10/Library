@@ -1,9 +1,12 @@
 package com.example.library.di
 
 import android.app.Application
+import android.content.Context
 import androidx.room.Room
 import com.example.library.persistence.AppDatabase
 import com.example.library.persistence.daos.GenderDao
+import com.example.library.ui.auth.UserPreferencesRepository
+import com.example.library.ui.auth.UserPreferencesRepositoryImpl
 import com.example.library.util.Constants.DB_NAME
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
@@ -12,6 +15,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Singleton
 
 @Module
@@ -37,6 +41,12 @@ object AppModule{
     @Provides
     fun provideFirebaseDb(): DatabaseReference{
         return Firebase.database.reference
+    }
+
+    @Singleton
+    @Provides
+    fun provideUserPreferencesRepository(@ApplicationContext context: Context): UserPreferencesRepository {
+        return UserPreferencesRepositoryImpl(context)
     }
 
 }

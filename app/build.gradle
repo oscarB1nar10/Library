@@ -142,6 +142,9 @@ dependencies {
     // Round images
     implementation "com.makeramen:roundedimageview:$rootProject.roundedImageView"
 
+    // DataStore
+    implementation "androidx.datastore:datastore-preferences:1.0.0-alpha01"
+
 }
 
 kapt {
