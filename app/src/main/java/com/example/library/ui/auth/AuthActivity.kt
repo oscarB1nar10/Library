@@ -4,9 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log.d
 import android.widget.Toast
+import androidx.activity.viewModels
 import com.example.library.BaseActivity
 import com.example.library.R
 import com.example.library.navigation.RootCoordinator
+import com.example.library.util.observe
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -29,12 +31,15 @@ class AuthActivity : BaseActivity() {
     @Inject
     lateinit var coordinator: RootCoordinator
 
+    private val authActivityViewModel: AuthActivityViewModel by viewModels()
+
     override fun getLayoutResourceId(): Int  = R.layout.activity_auth_layout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         configureUi()
+        subscribeObservers()
 
     }
 
@@ -43,6 +48,7 @@ class AuthActivity : BaseActivity() {
         // Check if user is signed in (non-null)
         val account: GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(this)
         account?.let {
+            authActivityViewModel.updateUserToken(it.idToken?:"")
             coordinator.showDashboard()
         }
     }
@@ -51,6 +57,14 @@ class AuthActivity : BaseActivity() {
         sign_in_button.setOnClickListener {
             signInGoogle()
         }
+    }
+
+    private fun subscribeObservers(){
+       observe(authActivityViewModel.userPreferences){state ->
+           if(!state.userToken.isNullOrEmpty()){
+               coordinator.showDashboard()
+           }
+       }
     }
 
     private fun signInGoogle(){
@@ -70,7 +84,7 @@ class AuthActivity : BaseActivity() {
         try{
             completedTask.getResult(ApiException::class.java)?.let {account ->
                d("handleResult", "account info: $account")
-                coordinator.showDashboard()
+                authActivityViewModel.updateUserToken(account.idToken?:"")
             }
         }catch (e: ApiException){
             d("handleResult", e.message.toString())
