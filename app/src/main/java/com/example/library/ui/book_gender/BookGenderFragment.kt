@@ -37,8 +37,6 @@ class BookGenderFragment : BaseFragment(), BookGenderRecyclerAdapter.Interaction
 
         fab_add_book_gender.setOnClickListener {
             showAddGenderDialog() }
-
-        bookGenderViewModel.getRemoteGenders()
     }
 
     private fun setupRecyclerAdapter() {

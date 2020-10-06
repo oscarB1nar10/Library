@@ -5,34 +5,47 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.example.library.models.Gender
 import com.example.library.states.State
+import com.example.library.ui.auth.UserPreferencesRepository
+import com.example.library.util.checkIsNullOrEmpty
 import kotlinx.coroutines.flow.collect
 
 class BookGenderViewModel
 @ViewModelInject
 constructor(
     private val bookGenderRepository: BookGenderRepository,
+    userPreferencesRepository: UserPreferencesRepository,
     @Assisted private val savedStateHandle: SavedStateHandle
 )  : ViewModel() {
 
     var gender: Gender? = null
+    lateinit var userToken: String
+
     private val saveBookGender: MutableLiveData<Gender> = MutableLiveData()
-    private val getRemoteGenders:  MutableLiveData<Boolean> = MutableLiveData()
     private val synchronizeRemoteAndLocalGenders: MutableLiveData<List<Gender>> = MutableLiveData()
     private val removeGender: MutableLiveData<Gender> = MutableLiveData()
+
+
+    private val userPreferences = userPreferencesRepository.userPreferencesFlow.asLiveData()
 
     val saveGenderResponse: LiveData<State<Boolean>> =
         Transformations.switchMap(saveBookGender) { gender ->
             liveData {
-                bookGenderRepository.saveGender(gender).collect {
+                bookGenderRepository.saveGender(gender, userToken?:"").collect {
                     emit(it)
                 }
             }
         }
 
     val getRemoteGendersResponse: LiveData<State<List<Gender>>> =
-        liveData {
-            bookGenderRepository.getRemoteGenders().collect {
-                emit(it)
+        Transformations.switchMap(userPreferences) { preferences ->
+            userToken = when(preferences){
+                is State.Success -> { preferences.data.userToken}
+                else -> ""
+            }
+            liveData {
+                return@liveData bookGenderRepository.getRemoteGenders(userToken).collect {
+                    emit(it)
+                }
             }
         }
 
@@ -49,7 +62,7 @@ constructor(
     val removeGenderResponse: LiveData<State<Boolean>> =
         Transformations.switchMap(removeGender){gender ->
             liveData(viewModelScope.coroutineContext) {
-                bookGenderRepository.removeGender(gender)
+                bookGenderRepository.removeGender(gender, userToken?:"")
                     .collect{
                         emit(it)
                     }
@@ -58,20 +71,17 @@ constructor(
 
 
     fun saveGender(gender: Gender){
-        saveBookGender.value = gender
+        if(userToken.checkIsNullOrEmpty())
+            saveBookGender.value = gender
     }
 
     fun saveBookGendersInLocalDB(genders: List<Gender>){
         synchronizeRemoteAndLocalGenders.value = genders
     }
 
-    fun getRemoteGenders(fromRemote: Boolean = true){
-        getRemoteGenders.value = fromRemote
-    }
-
-    //EXAMPLE PURPOSE
     fun removeBookGender(gender: Gender){
-        removeGender.value = gender
+        if(userToken.checkIsNullOrEmpty())
+            removeGender.value = gender
     }
 
 }

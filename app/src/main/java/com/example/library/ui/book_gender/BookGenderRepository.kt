@@ -6,11 +6,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface BookGenderRepository{
 
-    suspend fun saveGender(gender: Gender): Flow<State<Boolean>>
+    suspend fun saveGender(gender: Gender, userToken: String): Flow<State<Boolean>>
 
     suspend fun synchronizeRemoteAndLocalGenders(genders: List<Gender>): Flow<State<List<Gender>>>
 
-    suspend fun getRemoteGenders(): Flow<State<List<Gender>>>
+    suspend fun getRemoteGenders(userToken: String): Flow<State<List<Gender>>>
 
-    suspend fun removeGender(gender: Gender): Flow<State<Boolean>>
+    suspend fun removeGender(gender: Gender, userToken: String): Flow<State<Boolean>>
 }

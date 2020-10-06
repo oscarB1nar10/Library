@@ -5,6 +5,7 @@ import com.example.library.models.Gender
 import com.example.library.persistence.daos.GenderDao
 import com.example.library.states.State
 import com.example.library.util.Constants.COLLECTION_BOOKS_GENDER
+import com.example.library.util.Constants.COLLECTION_OWNER
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -25,7 +26,7 @@ constructor(
     private val firebaseDb: DatabaseReference
 ): BookGenderRepository{
 
-    override suspend fun saveGender(gender: Gender) = flow<State<Boolean>>{
+    override suspend fun saveGender(gender: Gender, userToken: String) = flow<State<Boolean>>{
 
         // Emit loading state
         emit(State.loading())
@@ -37,7 +38,11 @@ constructor(
         val gendersDB = genderDao.getForFirebasePurposes()
         val genderToUpdate = gendersDB.last()
 
-        firebaseDb.child(COLLECTION_BOOKS_GENDER).child(genderToUpdate.pk.toString()).setValue(genderToUpdate)
+        firebaseDb
+            .child(COLLECTION_OWNER)
+            .child(userToken)
+            .child(COLLECTION_BOOKS_GENDER)
+            .child(genderToUpdate.pk.toString()).setValue(genderToUpdate)
 
         emit(State.success(true))
 
@@ -63,12 +68,15 @@ constructor(
         emit(State.failed(it.message.toString()))
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun getRemoteGenders() = flow {
+    override suspend fun getRemoteGenders(userToken: String) = flow {
 
         // Emit loading state
         emit(State.loading())
 
-        val gender = firebaseDb.child(COLLECTION_BOOKS_GENDER).listen<Gender>()
+        val gender = firebaseDb
+            .child(COLLECTION_OWNER)
+            .child(userToken)
+            .child(COLLECTION_BOOKS_GENDER).listen<Gender>()
 
         gender.collect{
             emit(it)
@@ -80,14 +88,18 @@ constructor(
     }  .flowOn(Dispatchers.IO)
 
 
-    override suspend fun removeGender(gender: Gender) = flow<State<Boolean>> {
+    override suspend fun removeGender(gender: Gender, userToken: String) = flow<State<Boolean>> {
         // Emit loading state
         emit(State.loading())
 
         // Remove Gender
         val genderDeleted = genderDao.delete(gender) == 1
 
-        firebaseDb.child(COLLECTION_BOOKS_GENDER).child(gender.pk.toString()).removeValue()
+        firebaseDb
+            .child(COLLECTION_OWNER)
+            .child(userToken)
+            .child(COLLECTION_BOOKS_GENDER)
+            .child(gender.pk.toString()).removeValue()
 
         if(genderDeleted) emit(State.success(genderDeleted)) else emit(State.success(genderDeleted))
 
