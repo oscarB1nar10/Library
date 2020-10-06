@@ -48,7 +48,7 @@ class AuthActivity : BaseActivity() {
         // Check if user is signed in (non-null)
         val account: GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(this)
         account?.let {
-            authActivityViewModel.updateUserToken(it.idToken?:"")
+            authActivityViewModel.updateUserToken(it.id?:"")
             coordinator.showDashboard()
         }
     }
@@ -84,7 +84,7 @@ class AuthActivity : BaseActivity() {
         try{
             completedTask.getResult(ApiException::class.java)?.let {account ->
                d("handleResult", "account info: $account")
-                authActivityViewModel.updateUserToken(account.idToken?:"")
+                authActivityViewModel.updateUserToken(account.id?:"")
             }
         }catch (e: ApiException){
             d("handleResult", e.message.toString())
