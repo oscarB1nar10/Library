@@ -14,7 +14,10 @@ constructor(context: Context){
     private val activity = context as Activity
 
     fun showDashboard(){
-        activity.startActivity(Intent(activity, MainActivity::class.java))
+        activity.startActivity(Intent(activity, MainActivity::class.java).also {
+            it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        })
+        activity.finish()
     }
 
     fun showAuthScreen(){

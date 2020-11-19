@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import com.example.library.R
 import com.example.library.models.Gender
 import kotlinx.android.synthetic.main.layout_book_gender_item.view.*
+import kotlinx.android.synthetic.main.layout_notes.view.*
 
 class BookGenderRecyclerAdapter(private val interaction: Interaction? = null) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -68,6 +69,9 @@ class BookGenderRecyclerAdapter(private val interaction: Interaction? = null) :
 
             itemView.edit_book_gender_name.text = item.name
             itemView.notes_book_description.setText(item.description.toString())
+            itemView.notes_book_description.notes_textarea.isFocusable = false
+            itemView.notes_book_description.notes_textarea.isClickable = false
+
         }
     }
 

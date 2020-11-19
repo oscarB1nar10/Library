@@ -11,6 +11,7 @@ import com.example.library.R
 import com.example.library.models.Gender
 import com.example.library.ui.adapters.BookGenderRecyclerAdapter
 import com.example.library.util.observe
+import com.example.library.util.observeAndPreventsHandleEventAgain
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_book_gender.*
 
@@ -51,11 +52,11 @@ class BookGenderFragment : BaseFragment(), BookGenderRecyclerAdapter.Interaction
 
         observe(bookGenderViewModel.saveGenderResponse, ::handleSaveGenderResponse)
 
-        observe(bookGenderViewModel.getRemoteGendersResponse, ::handleGetRemoteGendersResponse)
+        observeAndPreventsHandleEventAgain(bookGenderViewModel.getRemoteGendersResponse, ::handleGetRemoteGendersResponse)
 
         observe(bookGenderViewModel.synchronizeRemoteAndLocalGendersResponse, ::handleSynchronizeRemoteAndLocalGendersResponse)
 
-        observe(bookGenderViewModel.removeGenderResponse, ::handleRemoveGenderResponse)
+        observeAndPreventsHandleEventAgain(bookGenderViewModel.removeGenderResponse, ::handleRemoveGenderResponse)
     }
 
     private fun handleSaveGenderResponse(wasDataSaved: Boolean){
