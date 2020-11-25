@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.fragment_book_gender.*
 
 
 @AndroidEntryPoint
-class BookGenderFragment : BaseFragment(), BookGenderRecyclerAdapter.Interaction {
+class BookGenderFragment : BaseFragment() {
 
     val bookGenderViewModel: BookGenderViewModel by viewModels()
 
@@ -43,7 +43,10 @@ class BookGenderFragment : BaseFragment(), BookGenderRecyclerAdapter.Interaction
     private fun setupRecyclerAdapter() {
         recycler_gender_items.apply {
             layoutManager = LinearLayoutManager(activity)
-            bookGenderRecyclerAdapter = BookGenderRecyclerAdapter(this@BookGenderFragment)
+            bookGenderRecyclerAdapter = BookGenderRecyclerAdapter(
+                ::editGender,
+                ::deleteGender
+            )
             adapter = bookGenderRecyclerAdapter
         }
     }
@@ -75,8 +78,11 @@ class BookGenderFragment : BaseFragment(), BookGenderRecyclerAdapter.Interaction
         Toast.makeText(activity, "Gender removed", Toast.LENGTH_LONG).show()
     }
 
-    override fun onItemSelected(position: Int, gender: Gender) {
-        //TODO("Not implemented yet")
-        bookGenderViewModel.removeBookGender(gender)
+     private fun editGender(gender: Gender){
+         showGenderToEdit(gender)
+    }
+
+     private fun deleteGender(gender: Gender){
+        //bookGenderViewModel.removeBookGender(gender)
     }
 }
