@@ -8,6 +8,8 @@ import androidx.fragment.app.DialogFragment
 import com.example.library.R
 import com.example.library.models.Gender
 import com.example.library.ui.book_gender.getGender
+import com.example.library.util.hideKeyboard
+import com.example.library.util.showKeyboard
 import kotlinx.android.synthetic.main.layout_gender_dialog.*
 import kotlinx.android.synthetic.main.layout_gender_dialog.view.*
 
@@ -44,12 +46,48 @@ class AddGenderDialogFragment : DialogFragment(){
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val gender: Gender? = getGender()
+        if(gender != null){
+            populateFields(gender)
+            setupClickListerWhenEditionIsCanceled()
+        }
+    }
+
+    private fun populateFields(gender: Gender) {
+        edit_book_gender_name.setText(gender.name.toString())
+        notes_book_description.setText(gender.description.toString())
+        notes_book_description.requestFocus()
+        activity?.showKeyboard()
+    }
+
+    private fun setupClickListerWhenEditionIsCanceled() {
+        tv_cancel.setOnClickListener {
+            dismiss()
+            activity?.let { tv_cancel.hideKeyboard(it) }
+        }
+    }
+
+    private fun getGender() : Gender? = arguments?.getParcelable(BOOK_GENDER_TO_EDIT)
+
     companion object {
 
+        const val BOOK_GENDER_TO_EDIT = "book_gender_to_edit"
         const val BOOK_GENDER_DIALOG = "book_gender_dialog"
 
         fun newInstance() : AddGenderDialogFragment {
             return AddGenderDialogFragment()
+        }
+
+        fun newInstance(genderToEdit: Gender): AddGenderDialogFragment {
+            val fragment = AddGenderDialogFragment()
+
+            val bundle = Bundle()
+            bundle.putParcelable(BOOK_GENDER_TO_EDIT, genderToEdit)
+            fragment.arguments = bundle
+
+            return fragment
         }
     }
 }

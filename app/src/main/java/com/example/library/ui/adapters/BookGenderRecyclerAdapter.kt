@@ -11,7 +11,9 @@ import com.example.library.models.Gender
 import kotlinx.android.synthetic.main.layout_book_gender_item.view.*
 import kotlinx.android.synthetic.main.layout_notes.view.*
 
-class BookGenderRecyclerAdapter(private val interaction: Interaction? = null) :
+class BookGenderRecyclerAdapter(
+    private val editGender: (Gender) -> Unit,
+    private val deleteGender: (Gender) -> Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Gender>() {
@@ -36,7 +38,8 @@ class BookGenderRecyclerAdapter(private val interaction: Interaction? = null) :
                 parent,
                 false
             ),
-            interaction
+            editGender,
+            deleteGender
         )
     }
 
@@ -59,23 +62,27 @@ class BookGenderRecyclerAdapter(private val interaction: Interaction? = null) :
     class BookGenderViewHolder
     constructor(
         itemView: View,
-        private val interaction: Interaction?
+        val editGender: (Gender) -> Unit,
+        val deleteGender: (Gender) -> Unit
     ) : RecyclerView.ViewHolder(itemView) {
 
         fun bind(item: Gender) = with(itemView) {
-            itemView.setOnClickListener {
-                interaction?.onItemSelected(adapterPosition, item)
-            }
-
             itemView.edit_book_gender_name.text = item.name
             itemView.notes_book_description.setText(item.description.toString())
             itemView.notes_book_description.notes_textarea.isFocusable = false
             itemView.notes_book_description.notes_textarea.isClickable = false
 
+            setupGenderActionsListener(itemView, item)
         }
-    }
 
-    interface Interaction {
-        fun onItemSelected(position: Int, item: Gender)
+        private fun setupGenderActionsListener(view: View, gender: Gender){
+            view.iv_remove_gender.setOnClickListener {
+                deleteGender(gender)
+            }
+
+            view.iv_edit_gender.setOnClickListener {
+                editGender(gender)
+            }
+        }
     }
 }
