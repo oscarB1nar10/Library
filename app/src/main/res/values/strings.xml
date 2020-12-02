@@ -35,6 +35,7 @@
     <string name="add_book_gender_ok_dialog_button">ok</string>
     <string name="add_book_gender_cancel_dialog_button">cancel</string>
     <string name="add_book_gender_gender_name">Gender Name</string>
+    <string name="add_book_gender_gender_updated">The gender was updated successfully.</string>
     <!-- GenderDialog -->
 
     <!-- Auth -->
