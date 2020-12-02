@@ -8,23 +8,34 @@ import kotlinx.coroutines.flow.Flow
 interface GenderDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(gender: Gender): Long
+    suspend fun insert(gender: Gender): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertGenders(gender: List<Gender>)
+    suspend fun insertGenders(gender: List<Gender>)
+
+    @Query(
+        """
+    UPDATE Gender
+    SET
+    name = :name,
+    description = :description
+    WHERE pk = :id
+"""
+    )
+    suspend fun updateGender(id: Int, name: String, description: String): Int
 
     @Delete
-    fun delete(gender: Gender): Int
+    suspend fun delete(gender: Gender): Int
 
     @Query("SELECT * FROM gender")
     fun get(): Flow<List<Gender>>
 
     @Query("SELECT * FROM gender")
-    fun getForFirebasePurposes(): List<Gender>
+    suspend fun getForFirebasePurposes(): List<Gender>
 
     @Query("SELECT * FROM gender WHERE pk = :pk")
-    fun searchByPk(pk: Int): Gender?
+    suspend fun searchByPk(pk: Int): Gender?
 
     @Query("DELETE FROM gender ")
-    fun deleteGenders()
+    suspend fun deleteGenders()
 }

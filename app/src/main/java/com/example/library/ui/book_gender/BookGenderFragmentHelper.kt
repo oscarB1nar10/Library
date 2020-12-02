@@ -4,7 +4,7 @@ import com.example.library.models.Gender
 import com.example.library.ui.dialogs.AddGenderDialogFragment
 import com.example.library.ui.dialogs.AddGenderDialogFragment.Companion.BOOK_GENDER_DIALOG
 
-fun BookGenderFragment.showAddGenderDialog(){
+fun BookGenderFragment.showAddGenderDialog() {
     val addBookGenderDialog = AddGenderDialogFragment.newInstance()
 
     activity?.let {
@@ -13,13 +13,13 @@ fun BookGenderFragment.showAddGenderDialog(){
         }
     }
 
-    addBookGenderDialog.onAddGenderAction = {gender ->
+    addBookGenderDialog.onAddGenderAction = { gender ->
         bookGenderViewModel.gender = gender
         bookGenderViewModel.saveGender(gender)
     }
 }
 
-fun BookGenderFragment.showGenderToEdit(gender: Gender){
+fun BookGenderFragment.showGenderToEdit(gender: Gender) {
     val addBookGenderDialog = AddGenderDialogFragment.newInstance(gender)
 
     activity?.let {
@@ -28,9 +28,9 @@ fun BookGenderFragment.showGenderToEdit(gender: Gender){
         }
     }
 
-    addBookGenderDialog.onAddGenderAction = {gender ->
+    addBookGenderDialog.onAddGenderAction = { gender ->
         bookGenderViewModel.gender = gender
-        bookGenderViewModel.saveGender(gender)
+        bookGenderViewModel.updateGender()
     }
 }
 

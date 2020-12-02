@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.library.BaseActivity
 import com.example.library.BaseFragment
 import com.example.library.R
 import com.example.library.models.Gender
@@ -37,7 +38,8 @@ class BookGenderFragment : BaseFragment() {
         setupRecyclerAdapter()
 
         fab_add_book_gender.setOnClickListener {
-            showAddGenderDialog() }
+            showAddGenderDialog()
+        }
     }
 
     private fun setupRecyclerAdapter() {
@@ -55,34 +57,54 @@ class BookGenderFragment : BaseFragment() {
 
         observe(bookGenderViewModel.saveGenderResponse, ::handleSaveGenderResponse)
 
-        observeAndPreventsHandleEventAgain(bookGenderViewModel.getRemoteGendersResponse, ::handleGetRemoteGendersResponse)
+        observe(bookGenderViewModel.updateGenderResponse, ::handleUpdateGenderResponse)
 
-        observe(bookGenderViewModel.synchronizeRemoteAndLocalGendersResponse, ::handleSynchronizeRemoteAndLocalGendersResponse)
+        observeAndPreventsHandleEventAgain(
+            bookGenderViewModel.getRemoteGendersResponse,
+            ::handleGetRemoteGendersResponse
+        )
 
-        observeAndPreventsHandleEventAgain(bookGenderViewModel.removeGenderResponse, ::handleRemoveGenderResponse)
+        observe(
+            bookGenderViewModel.synchronizeRemoteAndLocalGendersResponse,
+            ::handleSynchronizeRemoteAndLocalGendersResponse
+        )
+
+        observeAndPreventsHandleEventAgain(
+            bookGenderViewModel.removeGenderResponse,
+            ::handleRemoveGenderResponse
+        )
     }
 
-    private fun handleSaveGenderResponse(wasDataSaved: Boolean){
+    private fun handleSaveGenderResponse(wasDataSaved: Boolean) {
         Log.i("saveGenderR", "Success: $wasDataSaved")
     }
 
-    private fun handleGetRemoteGendersResponse(genders: List<Gender>){
+    private fun handleUpdateGenderResponse(wasGenderUpdated: Boolean) {
+        if (wasGenderUpdated) {
+            (activity as BaseActivity).showBanner(
+                getString(R.string.add_book_gender_gender_updated),
+                BaseActivity.BannerType.SUCCESS
+            )
+        }
+    }
+
+    private fun handleGetRemoteGendersResponse(genders: List<Gender>) {
         bookGenderViewModel.saveBookGendersInLocalDB(genders)
     }
 
-    private fun handleSynchronizeRemoteAndLocalGendersResponse(genders: List<Gender>){
+    private fun handleSynchronizeRemoteAndLocalGendersResponse(genders: List<Gender>) {
         bookGenderRecyclerAdapter.submitList(genders)
     }
 
-    private fun handleRemoveGenderResponse(wasDeleted: Boolean){
+    private fun handleRemoveGenderResponse(wasDeleted: Boolean) {
         Toast.makeText(activity, "Gender removed", Toast.LENGTH_LONG).show()
     }
 
-     private fun editGender(gender: Gender){
-         showGenderToEdit(gender)
+    private fun editGender(gender: Gender) {
+        showGenderToEdit(gender)
     }
 
-     private fun deleteGender(gender: Gender){
-        //bookGenderViewModel.removeBookGender(gender)
+    private fun deleteGender(gender: Gender) {
+        bookGenderViewModel.removeBookGender(gender)
     }
 }

@@ -156,4 +156,10 @@
         <item name="android:layout_marginEnd">16dp</item>
     </style>
 
+    <!-- Banners style -->
+    <style name="PopupWindowAnimationStyle">
+        <item name="android:windowEnterAnimation">@anim/anim_popup_window_fade_in</item>
+        <item name="android:windowExitAnimation">@anim/anim_popup_window_fade_out</item>
+    </style>
+
 </resources>

@@ -6,6 +6,7 @@ import com.example.library.persistence.daos.GenderDao
 import com.example.library.states.State
 import com.example.library.util.Constants.COLLECTION_BOOKS_GENDER
 import com.example.library.util.Constants.COLLECTION_OWNER
+import com.example.library.util.Constants.ERROR_TRYING_TO_PERFORM_UPDATE
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -24,9 +25,9 @@ constructor(
     @CollectionBooksGender private val genderCollection: CollectionReference,
     private val genderDao: GenderDao,
     private val firebaseDb: DatabaseReference
-): BookGenderRepository{
+) : BookGenderRepository {
 
-    override suspend fun saveGender(gender: Gender, userToken: String) = flow<State<Boolean>>{
+    override suspend fun saveGender(gender: Gender, userToken: String) = flow<State<Boolean>> {
 
         // Emit loading state
         emit(State.loading())
@@ -51,22 +52,53 @@ constructor(
         emit(State.failed(it.message.toString()))
     }.flowOn(Dispatchers.IO)
 
+    override suspend fun updateGender(gender: Gender, userToken: String) = flow<State<Boolean>> {
 
-    override suspend fun synchronizeRemoteAndLocalGenders(genders: List<Gender>) = flow<State<List<Gender>>>{
-
+        // Emit loading state
         emit(State.loading())
 
-        saveRemoteGendersIntoLocalDB(genders)
+        // Update Gender
+        val updated = genderDao.updateGender(
+            id = gender.pk,
+            name = gender.name ?: "",
+            description = gender.description ?: ""
+        )
 
-        val gendersDB = genderDao.get()
-        gendersDB.collect{
-            emit(State.success(it)) }
+        if (updated > 0) {
+            firebaseDb
+                .child(COLLECTION_OWNER)
+                .child(userToken)
+                .child(COLLECTION_BOOKS_GENDER)
+                .child(gender.pk.toString()).setValue(gender)
 
-        emit(State.success(genders))
+            emit(State.success(true))
+        } else {
+            emit(State.failed(ERROR_TRYING_TO_PERFORM_UPDATE))
+            emit(State.success(false))
+        }
 
     }.catch {
         emit(State.failed(it.message.toString()))
     }.flowOn(Dispatchers.IO)
+
+
+    override suspend fun synchronizeRemoteAndLocalGenders(genders: List<Gender>) =
+        flow<State<List<Gender>>> {
+
+            emit(State.loading())
+
+            saveRemoteGendersIntoLocalDB(genders)
+
+            val gendersDB = genderDao.get()
+            gendersDB.collect {
+                emit(State.success(it))
+            }
+
+            emit(State.success(genders))
+
+        }.catch {
+            emit(State.failed(it.message.toString()))
+        }.flowOn(Dispatchers.IO)
 
     override suspend fun getRemoteGenders(userToken: String) = flow {
 
@@ -78,14 +110,14 @@ constructor(
             .child(userToken)
             .child(COLLECTION_BOOKS_GENDER).listen<Gender>()
 
-        gender.collect{
+        gender.collect {
             emit(it)
         }
 
     }.catch {
         // If exception is throw , emit failed state along with message
         emit(State.failed(it.message.toString()))
-    }  .flowOn(Dispatchers.IO)
+    }.flowOn(Dispatchers.IO)
 
 
     override suspend fun removeGender(gender: Gender, userToken: String) = flow<State<Boolean>> {
@@ -101,7 +133,7 @@ constructor(
             .child(COLLECTION_BOOKS_GENDER)
             .child(gender.pk.toString()).removeValue()
 
-        if(genderDeleted) emit(State.success(genderDeleted)) else emit(State.success(genderDeleted))
+        if (genderDeleted) emit(State.success(genderDeleted)) else emit(State.success(genderDeleted))
 
     }.catch {
         // If exception is throw , emit failed state along with message
@@ -109,7 +141,7 @@ constructor(
     }.flowOn(Dispatchers.IO)
 
 
-    private fun saveRemoteGendersIntoLocalDB(genders: List<Gender>){
+    private suspend fun saveRemoteGendersIntoLocalDB(genders: List<Gender>) {
         genderDao.deleteGenders()
         genderDao.insertGenders(genders)
     }
@@ -126,7 +158,7 @@ constructor(
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     try {
                         val listT: MutableList<T> = mutableListOf()
-                        dataSnapshot.children.mapNotNullTo(listT){
+                        dataSnapshot.children.mapNotNullTo(listT) {
                             it.getValue<T>(T::class.java)
                         }
 
