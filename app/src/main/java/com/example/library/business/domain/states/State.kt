@@ -33,4 +33,6 @@ sealed class State<T> {
         fun <T> success(data: T) = Success(data)
         fun <T> failed(message: String) = Failed<T>(message)
     }
+
+    fun getWrappedData(state: Success<T>): T = state.data
 }

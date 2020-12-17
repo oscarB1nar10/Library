@@ -6,8 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.example.library.R
-import com.example.library.models.Gender
-import com.example.library.ui.book_gender.getGender
+import com.example.library.business.domain.model.GenderModel
+import com.example.library.ui.book_gender.createGender
+import com.example.library.ui.book_gender.genderToUpdate
 import com.example.library.util.hideKeyboard
 import com.example.library.util.showKeyboard
 import kotlinx.android.synthetic.main.layout_gender_dialog.*
@@ -15,7 +16,7 @@ import kotlinx.android.synthetic.main.layout_gender_dialog.view.*
 
 class AddGenderDialogFragment : DialogFragment() {
 
-    var onAddGenderAction: ((gender: Gender) -> Unit)? = null
+    var onAddGenderAction: ((gender: GenderModel) -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,10 +38,9 @@ class AddGenderDialogFragment : DialogFragment() {
 
         rootView.tv_ok.setOnClickListener {
             onAddGenderAction?.invoke(
-                getGender(
-                    getGender()?.pk ?: 0,
-                    edit_book_gender_name.text.toString(),
-                    notes_book_description.getText()
+                createGender(
+                    name = edit_book_gender_name.text.toString(),
+                    description = notes_book_description.getText()
                 )
             )
             dismiss()
@@ -53,18 +53,33 @@ class AddGenderDialogFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val gender: Gender? = getGender()
+        val gender: GenderModel? = getGender()
         if (gender != null) {
             populateFields(gender)
+            setupClickListerWhenUpdatedIsSelected()
             setupClickListerWhenEditionIsCanceled()
         }
     }
 
-    private fun populateFields(gender: Gender) {
+    private fun populateFields(gender: GenderModel) {
         edit_book_gender_name.setText(gender.name.toString())
         notes_book_description.setText(gender.description.toString())
         notes_book_description.requestFocus()
         activity?.showKeyboard()
+    }
+
+    private fun setupClickListerWhenUpdatedIsSelected(){
+        tv_ok.setOnClickListener {
+            onAddGenderAction?.invoke(
+                genderToUpdate(
+                    name = edit_book_gender_name.text.toString(),
+                    description = notes_book_description.getText(),
+                    currentGender = getGender() ?: GenderModel()
+                )
+            )
+            dismiss()
+            activity?.let { tv_ok.hideKeyboard(it) }
+        }
     }
 
     private fun setupClickListerWhenEditionIsCanceled() {
@@ -74,7 +89,7 @@ class AddGenderDialogFragment : DialogFragment() {
         }
     }
 
-    private fun getGender(): Gender? = arguments?.getParcelable(BOOK_GENDER_TO_EDIT)
+    private fun getGender(): GenderModel? = arguments?.getParcelable(BOOK_GENDER_TO_EDIT)
 
     companion object {
 
@@ -85,7 +100,7 @@ class AddGenderDialogFragment : DialogFragment() {
             return AddGenderDialogFragment()
         }
 
-        fun newInstance(genderToEdit: Gender): AddGenderDialogFragment {
+        fun newInstance(genderToEdit: GenderModel): AddGenderDialogFragment {
             val fragment = AddGenderDialogFragment()
 
             val bundle = Bundle()

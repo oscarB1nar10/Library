@@ -5,7 +5,7 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import androidx.lifecycle.Transformations.switchMap
 import com.example.library.models.Book
-import com.example.library.states.State
+import com.example.library.business.domain.states.State
 import com.google.firebase.firestore.DocumentReference
 import kotlinx.coroutines.flow.collect
 

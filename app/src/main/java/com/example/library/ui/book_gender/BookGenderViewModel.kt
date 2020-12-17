@@ -3,10 +3,12 @@ package com.example.library.ui.book_gender
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
-import com.example.library.models.Gender
-import com.example.library.states.State
+import com.example.library.business.domain.model.GenderModel
+import com.example.library.models.GenderCacheEntity
+import com.example.library.business.domain.states.State
 import com.example.library.ui.auth.UserPreferencesRepository
 import com.example.library.util.checkIsNullOrEmpty
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.flow.collect
 
 class BookGenderViewModel
@@ -17,13 +19,13 @@ constructor(
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    var gender: Gender? = null
+    var gender: GenderModel? = null
     lateinit var userToken: String
 
-    private val saveBookGender: MutableLiveData<Gender> = MutableLiveData()
-    private val updateBookGender: MutableLiveData<Gender> = MutableLiveData()
-    private val synchronizeRemoteAndLocalGenders: MutableLiveData<List<Gender>> = MutableLiveData()
-    private val removeGender: MutableLiveData<Gender> = MutableLiveData()
+    private val saveBookGender: MutableLiveData<GenderModel> = MutableLiveData()
+    private val updateBookGender: MutableLiveData<GenderModel> = MutableLiveData()
+    private val synchronizeRemoteAndLocalGenders: MutableLiveData<List<GenderModel>> = MutableLiveData()
+    private val removeGender: MutableLiveData<GenderModel> = MutableLiveData()
 
 
     private val userPreferences = userPreferencesRepository.userPreferencesFlow.asLiveData()
@@ -40,13 +42,35 @@ constructor(
     val updateGenderResponse: LiveData<State<Boolean>> =
         Transformations.switchMap(updateBookGender) { gender ->
             liveData {
-                bookGenderRepository.updateGender(gender, userToken ?: "").collect {
-                    emit(it)
-                }
+                bookGenderRepository.getRemoteGenderToUpdate(
+                    genderId = gender.pk,
+                    userToken = userToken
+                )
+                    .collect { state ->
+                        when (state) {
+                            is State.Loading -> {
+                                //TODO (Maybe show progress bar)
+                            }
+
+                            is State.Success -> {
+                                bookGenderRepository.updateGender(
+                                    state.data.filter { it.pk == gender.pk }[0],
+                                    gender,
+                                    userToken ?: ""
+                                ).collect {
+                                    emit(it)
+                                }
+                            }
+
+                            is State.Failed -> {
+                                // TODO(Maybe handle error)
+                            }
+                        }
+                    }
             }
         }
 
-    val getRemoteGendersResponse: LiveData<State<List<Gender>>> =
+    val getRemoteGendersResponse: LiveData<State<List<GenderModel>>> =
         Transformations.switchMap(userPreferences) { preferences ->
             userToken = when (preferences) {
                 is State.Success -> {
@@ -61,7 +85,7 @@ constructor(
             }
         }
 
-    val synchronizeRemoteAndLocalGendersResponse: LiveData<State<List<Gender>>> =
+    val synchronizeRemoteAndLocalGendersResponse: LiveData<State<List<GenderModel>>> =
         Transformations.switchMap(synchronizeRemoteAndLocalGenders) { genders ->
             liveData {
                 bookGenderRepository.synchronizeRemoteAndLocalGenders(genders)
@@ -82,7 +106,7 @@ constructor(
         }
 
 
-    fun saveGender(gender: Gender) {
+    fun saveGender(gender: GenderModel) {
         if (isValidUserToken())
             saveBookGender.value = gender
     }
@@ -92,11 +116,11 @@ constructor(
             updateBookGender.value = gender
     }
 
-    fun saveBookGendersInLocalDB(genders: List<Gender>) {
+    fun saveBookGendersInLocalDB(genders: List<GenderModel>) {
         synchronizeRemoteAndLocalGenders.value = genders
     }
 
-    fun removeBookGender(gender: Gender) {
+    fun removeBookGender(gender: GenderModel) {
         if (userToken.checkIsNullOrEmpty())
             removeGender.value = gender
     }

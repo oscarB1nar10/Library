@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.example.library.BaseActivity
-import com.example.library.states.State
+import com.example.library.business.domain.states.State
 import com.example.library.util.Constants.ERROR_TRYING_TO_PERFORM_UPDATE
 import kotlinx.android.synthetic.main.activity_auth_layout.*
 import kotlinx.android.synthetic.main.activity_main.*

@@ -2,7 +2,7 @@ package com.example.library.ui.add_books
 
 import com.example.library.di.main.CollectionBooks
 import com.example.library.models.Book
-import com.example.library.states.State
+import com.example.library.business.domain.states.State
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import kotlinx.coroutines.Dispatchers

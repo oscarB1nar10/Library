@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.library.BaseActivity
 import com.example.library.BaseFragment
 import com.example.library.R
-import com.example.library.models.Gender
+import com.example.library.business.domain.model.GenderModel
 import com.example.library.ui.adapters.BookGenderRecyclerAdapter
 import com.example.library.util.observe
 import com.example.library.util.observeAndPreventsHandleEventAgain
@@ -88,11 +88,11 @@ class BookGenderFragment : BaseFragment() {
         }
     }
 
-    private fun handleGetRemoteGendersResponse(genders: List<Gender>) {
+    private fun handleGetRemoteGendersResponse(genders: List<GenderModel>) {
         bookGenderViewModel.saveBookGendersInLocalDB(genders)
     }
 
-    private fun handleSynchronizeRemoteAndLocalGendersResponse(genders: List<Gender>) {
+    private fun handleSynchronizeRemoteAndLocalGendersResponse(genders: List<GenderModel>) {
         bookGenderRecyclerAdapter.submitList(genders)
     }
 
@@ -100,11 +100,11 @@ class BookGenderFragment : BaseFragment() {
         Toast.makeText(activity, "Gender removed", Toast.LENGTH_LONG).show()
     }
 
-    private fun editGender(gender: Gender) {
+    private fun editGender(gender: GenderModel) {
         showGenderToEdit(gender)
     }
 
-    private fun deleteGender(gender: Gender) {
+    private fun deleteGender(gender: GenderModel) {
         bookGenderViewModel.removeBookGender(gender)
     }
 }

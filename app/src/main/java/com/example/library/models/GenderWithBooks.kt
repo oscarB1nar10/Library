@@ -4,7 +4,7 @@ import androidx.room.Embedded
 import androidx.room.Relation
 
 data class GenderWithBooks(
-    @Embedded val gender: Gender,
+    @Embedded val gender: GenderCacheEntity,
 
     @Relation(
         parentColumn = "pk",

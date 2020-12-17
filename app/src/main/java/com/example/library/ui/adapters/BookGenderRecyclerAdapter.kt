@@ -7,22 +7,23 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import com.example.library.R
-import com.example.library.models.Gender
+import com.example.library.business.domain.model.GenderModel
+import com.example.library.models.GenderCacheEntity
 import kotlinx.android.synthetic.main.layout_book_gender_item.view.*
 import kotlinx.android.synthetic.main.layout_notes.view.*
 
 class BookGenderRecyclerAdapter(
-    private val editGender: (Gender) -> Unit,
-    private val deleteGender: (Gender) -> Unit) :
+    private val editGender: (GenderModel) -> Unit,
+    private val deleteGender: (GenderModel) -> Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Gender>() {
+    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<GenderModel>() {
 
-        override fun areItemsTheSame(oldItem: Gender, newItem: Gender): Boolean {
+        override fun areItemsTheSame(oldItem: GenderModel, newItem: GenderModel): Boolean {
             return oldItem.pk == newItem.pk
         }
 
-        override fun areContentsTheSame(oldItem: Gender, newItem: Gender): Boolean {
+        override fun areContentsTheSame(oldItem: GenderModel, newItem: GenderModel): Boolean {
             return oldItem == newItem
         }
 
@@ -55,18 +56,18 @@ class BookGenderRecyclerAdapter(
         return differ.currentList.size
     }
 
-    fun submitList(list: List<Gender>) {
+    fun submitList(list: List<GenderModel>) {
         differ.submitList(list)
     }
 
     class BookGenderViewHolder
     constructor(
         itemView: View,
-        val editGender: (Gender) -> Unit,
-        val deleteGender: (Gender) -> Unit
+        val editGender: (GenderModel) -> Unit,
+        val deleteGender: (GenderModel) -> Unit
     ) : RecyclerView.ViewHolder(itemView) {
 
-        fun bind(item: Gender) = with(itemView) {
+        fun bind(item: GenderModel) = with(itemView) {
             itemView.edit_book_gender_name.text = item.name
             itemView.notes_book_description.setText(item.description.toString())
             itemView.notes_book_description.notes_textarea.isFocusable = false
@@ -75,7 +76,7 @@ class BookGenderRecyclerAdapter(
             setupGenderActionsListener(itemView, item)
         }
 
-        private fun setupGenderActionsListener(view: View, gender: Gender){
+        private fun setupGenderActionsListener(view: View, gender: GenderModel){
             view.iv_remove_gender.setOnClickListener {
                 deleteGender(gender)
             }
