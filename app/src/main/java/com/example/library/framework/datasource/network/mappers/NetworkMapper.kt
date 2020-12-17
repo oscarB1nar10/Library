@@ -1,4 +1,5 @@
 package com.example.library.framework.datasource.network.mappers
 
-class NetworkMapper {
-}
+import com.example.library.business.domain.util.EntityMapper
+import javax.inject.Inject
+

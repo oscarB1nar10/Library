@@ -1,4 +1,4 @@
-package com.example.library.framework.datasource
+package com.example.library.framework.datasource.network
 
 class PlaceHolder {
 }

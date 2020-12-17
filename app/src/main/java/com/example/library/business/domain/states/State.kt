@@ -1,4 +1,4 @@
-package com.example.library.states
+package com.example.library.business.domain.states
 
 sealed class State<T> {
     class Loading<T> : State<T>()

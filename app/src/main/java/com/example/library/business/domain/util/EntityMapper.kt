@@ -1,4 +1,8 @@
 package com.example.library.business.domain.util
 
-interface EntityMapper {
+interface EntityMapper<Entity, DomainModel>{
+
+    fun mapFromEntity(entity: Entity): DomainModel
+
+    fun mapToEntity(domainModel: DomainModel): Entity
 }
