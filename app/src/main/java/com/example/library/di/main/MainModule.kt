@@ -1,5 +1,6 @@
 package com.example.library.di.main
 
+import com.example.library.framework.datasource.cache.mappers.CacheMapperGender
 import com.example.library.persistence.daos.GenderDao
 import com.example.library.ui.book_gender.BookGenderRepository
 import com.example.library.ui.book_gender.BookGenderRepositoryImpl
@@ -39,8 +40,9 @@ object MainModule {
     fun provideBookGenderRepository(
         @CollectionBooksGender genderCollection: CollectionReference,
         genderDao: GenderDao,
+        cacheMapperGender: CacheMapperGender,
         firebaseDb: DatabaseReference
-    ): BookGenderRepository{
-        return BookGenderRepositoryImpl(genderCollection, genderDao, firebaseDb)
+    ): BookGenderRepository {
+        return BookGenderRepositoryImpl(genderCollection, genderDao, cacheMapperGender, firebaseDb)
     }
 }

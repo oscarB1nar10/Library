@@ -1,6 +1,6 @@
 package com.example.library.ui.auth
 
-import com.example.library.states.State
+import com.example.library.business.domain.states.State
 import kotlinx.coroutines.flow.Flow
 
 interface UserPreferencesRepository {

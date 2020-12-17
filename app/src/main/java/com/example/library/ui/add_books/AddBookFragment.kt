@@ -8,7 +8,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.library.BaseFragment
 import com.example.library.R
-import com.example.library.states.State
+import com.example.library.business.domain.states.State
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_add_books.*
 import kotlinx.android.synthetic.main.layout_book_gender.*

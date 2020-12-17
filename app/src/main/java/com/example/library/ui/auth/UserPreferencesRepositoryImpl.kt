@@ -3,7 +3,7 @@ package com.example.library.ui.auth
 import android.content.Context
 import androidx.datastore.DataStore
 import androidx.datastore.preferences.*
-import com.example.library.states.State
+import com.example.library.business.domain.states.State
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map

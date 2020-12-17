@@ -1,6 +1,7 @@
 package com.example.library.ui.book_gender
 
-import com.example.library.models.Gender
+import com.example.library.business.domain.model.GenderModel
+import com.example.library.models.GenderCacheEntity
 import com.example.library.ui.dialogs.AddGenderDialogFragment
 import com.example.library.ui.dialogs.AddGenderDialogFragment.Companion.BOOK_GENDER_DIALOG
 
@@ -19,7 +20,7 @@ fun BookGenderFragment.showAddGenderDialog() {
     }
 }
 
-fun BookGenderFragment.showGenderToEdit(gender: Gender) {
+fun BookGenderFragment.showGenderToEdit(gender: GenderModel) {
     val addBookGenderDialog = AddGenderDialogFragment.newInstance(gender)
 
     activity?.let {
