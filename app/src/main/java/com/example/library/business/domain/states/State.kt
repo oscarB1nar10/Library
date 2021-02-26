@@ -1,6 +1,6 @@
 package com.example.library.business.domain.states
 
-sealed class State<T> {
+sealed class State<out T> {
     class Loading<T> : State<T>()
 
     data class Success<T>(val data: T) : State<T>() {
@@ -33,6 +33,4 @@ sealed class State<T> {
         fun <T> success(data: T) = Success(data)
         fun <T> failed(message: String) = Failed<T>(message)
     }
-
-    fun getWrappedData(state: Success<T>): T = state.data
 }

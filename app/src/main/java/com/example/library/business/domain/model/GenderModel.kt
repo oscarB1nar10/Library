@@ -7,18 +7,20 @@ import java.util.*
 
 @Parcelize
 data class GenderModel(
-    var pk: Int = 0,
-    var name: String? = null,
-    var description: String? = null,
-    var created_at: String? = null,
-    var updated_at: String? = null
-): Parcelable{
+        var pk: Int = 0,
+        var name: String? = null,
+        var description: String? = null,
+        var created_at: String? = null,
+        var updated_at: String? = null
+) : Parcelable {
 
-    companion object{
+    companion object {
 
         fun getUpdatedAtDate(gender: GenderModel): Date {
             val dateFormat = SimpleDateFormat("yyyy-MM-d HH:mm:ss", Locale.US)
-            return dateFormat.parse(gender.updated_at?:"")?: Date()
+            return gender.updated_at?.let {
+                dateFormat.parse(it) ?: Date()
+            } ?: Date()
         }
     }
 }

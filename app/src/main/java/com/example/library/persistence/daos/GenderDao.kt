@@ -1,6 +1,7 @@
 package com.example.library.persistence.daos
 
 import androidx.room.*
+import com.example.library.business.domain.model.GenderModel
 import com.example.library.models.GenderCacheEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -25,11 +26,24 @@ interface GenderDao {
     )
     suspend fun updateGender(id: Int, name: String?, description: String?, updatedAt: String?): Int
 
+    @Query(
+        """
+            SELECT * FROM Gender
+            WHERE name = :name
+            AND description = :description
+            AND updated_at = :updatedAt
+        """
+    )
+    suspend fun getGenderFromQuery(name: String, description: String, updatedAt: String): GenderCacheEntity
+
     @Delete
     suspend fun delete(gender: GenderCacheEntity): Int
 
     @Query("SELECT * FROM gender")
     fun get(): Flow<List<GenderCacheEntity>>
+
+    @Query("SELECT * FROM gender")
+    fun getCacheBookGenderAsList(): List<GenderCacheEntity>
 
     @Query("SELECT * FROM gender")
     suspend fun getForFirebasePurposes(): List<GenderCacheEntity>

@@ -1,6 +1,7 @@
 package com.example.library.ui
 
 import android.os.Bundle
+import android.view.View
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
@@ -8,6 +9,7 @@ import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.example.library.BaseActivity
 import com.example.library.R
+import com.example.library.databinding.ActivityMainBinding
 import com.example.library.navigation.RootCoordinator
 import com.example.library.ui.auth.UserPreferencesPresenter
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -19,17 +21,20 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
 
-    private val navController by lazy{
+    private val navController by lazy {
         Navigation.findNavController(this, R.id.my_nav_host_fragment)
     }
 
-    @Inject lateinit var coordinator: RootCoordinator
+    @Inject
+    lateinit var coordinator: RootCoordinator
 
-    @Inject lateinit var mGoogleSignInClient: GoogleSignInClient
+    @Inject
+    lateinit var mGoogleSignInClient: GoogleSignInClient
 
-    @Inject lateinit var userPreferencesPresenter: UserPreferencesPresenter
+    @Inject
+    lateinit var userPreferencesPresenter: UserPreferencesPresenter
 
-    override fun getLayoutResourceId() = R.layout.activity_main
+    override fun getLayoutResource(): View = ActivityMainBinding.inflate(layoutInflater).root
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +47,7 @@ class MainActivity : BaseActivity() {
         return NavigationUI.navigateUp(navController, drawer_layout)
     }
 
-    private fun setupDrawerLayout(){
+    private fun setupDrawerLayout() {
         nav_view.setupWithNavController(navController)
         NavigationUI.setupActionBarWithNavController(this, navController, drawer_layout)
     }
@@ -57,7 +62,7 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun logout(){
+    private fun logout() {
         mGoogleSignInClient.signOut()
         coordinator.navigateToAuth()
     }
@@ -70,3 +75,4 @@ class MainActivity : BaseActivity() {
         }
     }
 }
+

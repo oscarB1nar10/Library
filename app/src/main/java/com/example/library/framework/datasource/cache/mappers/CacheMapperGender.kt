@@ -37,7 +37,6 @@ constructor(): EntityMapper<GenderCacheEntity, GenderModel>{
 
     override fun mapToEntity(domainModel: GenderModel): GenderCacheEntity {
         return GenderCacheEntity(
-            pk = domainModel.pk,
             name = domainModel.name,
             description = domainModel.description,
             created_at = domainModel.created_at,

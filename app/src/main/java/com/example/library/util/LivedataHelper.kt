@@ -10,8 +10,9 @@ import androidx.lifecycle.Observer
 import com.example.library.BaseActivity
 import com.example.library.business.domain.states.State
 import com.example.library.util.Constants.ERROR_TRYING_TO_PERFORM_UPDATE
-import kotlinx.android.synthetic.main.activity_auth_layout.*
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_auth_layout.view.*
+import kotlinx.android.synthetic.main.activity_main.view.*
+import kotlinx.android.synthetic.main.activity_main.view.progress_circular
 
 fun <T> Fragment.observe(liveData: LiveData<State<T>>, success: (T) -> Unit) {
 
@@ -19,18 +20,21 @@ fun <T> Fragment.observe(liveData: LiveData<State<T>>, success: (T) -> Unit) {
         when (state) {
             is State.Loading -> {
                 Log.i("subscribeObservers", "Loading: $state")
-                this.activity?.progress_circular?.visibility = View.VISIBLE
+                (this.activity as BaseActivity).fragmentBinding.progress_circular.visibility = View.VISIBLE
+                //this.activity?.progress_circular?.visibility = View.VISIBLE
             }
 
             is State.Success -> {
                 Log.i("subscribeObservers", "Success: $state")
                 success(state.data)
-                this.activity?.progress_circular?.visibility = View.GONE
+                (this.activity as BaseActivity).fragmentBinding.progress_circular.visibility = View.GONE
+                //this.activity?.progress_circular?.visibility = View.GONE
             }
 
             is State.Failed -> {
                 Log.i("subscribeObservers", "Failed: $state")
-                this.activity?.progress_circular?.visibility = View.GONE
+                //this.activity?.progress_circular?.visibility = View.GONE
+                (this.activity as BaseActivity).fragmentBinding.progress_circular.visibility = View.GONE
                 if (state.message.isNotEmpty())
                     this.activity?.let {
                         showErrorBannerIfConvenient(it, state.message)
@@ -49,20 +53,23 @@ fun <T> Fragment.observeAndPreventsHandleEventAgain(
         when (state) {
             is State.Loading -> {
                 Log.i("subscribeObservers", "Loading: $state")
-                this.activity?.progress_circular?.visibility = View.VISIBLE
+                (this.activity as BaseActivity).fragmentBinding.progress_circular.visibility = View.VISIBLE
+                //this.activity?.progress_circular?.visibility = View.VISIBLE
             }
 
             is State.Success -> {
                 Log.i("subscribeObservers", "Success: $state")
                 state.getContentIfNotHandled()?.let {
                     success(state.data)
-                    this.activity?.progress_circular?.visibility = View.GONE
+                    (this.activity as BaseActivity).fragmentBinding.progress_circular.visibility = View.GONE
+                    //this.activity?.progress_circular?.visibility = View.GONE
                 }
             }
 
             is State.Failed -> {
                 Log.i("subscribeObservers", "Failed: $state")
-                this.activity?.progress_circular?.visibility = View.GONE
+                (this.activity as BaseActivity).fragmentBinding.progress_circular.visibility = View.GONE
+                //this.activity?.progress_circular?.visibility = View.GONE
                 if (state.message.isNotEmpty())
                     this.activity?.let {
                         showErrorBannerIfConvenient(it, state.message)
@@ -78,18 +85,21 @@ fun <T> AppCompatActivity.observe(liveData: LiveData<State<T>>, success: (T) -> 
         when (state) {
             is State.Loading -> {
                 Log.i("subscribeObservers", "Loading: $state")
-                progress_circular_auth.visibility = View.VISIBLE
+                (this as BaseActivity).fragmentBinding.progress_circular_auth.visibility = View.VISIBLE
+                //progress_circular_auth.visibility = View.VISIBLE
             }
 
             is State.Success -> {
                 Log.i("subscribeObservers", "Success: $state")
                 success(state.data)
-                progress_circular_auth.visibility = View.GONE
+                (this as BaseActivity).fragmentBinding.progress_circular_auth.visibility = View.GONE
+                //progress_circular_auth.visibility = View.GONE
             }
 
             is State.Failed -> {
                 Log.i("subscribeObservers", "Failed: $state")
-                progress_circular_auth.visibility = View.GONE
+                (this as BaseActivity).fragmentBinding.progress_circular_auth.visibility = View.GONE
+                //progress_circular_auth.visibility = View.GONE
                 if (state.message.isNotEmpty())
                     showErrorBannerIfConvenient(this, state.message)
             }

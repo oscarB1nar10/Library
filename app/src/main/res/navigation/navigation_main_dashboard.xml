@@ -24,7 +24,7 @@
     </fragment>
     <fragment
         android:id="@+id/genderFragment"
-        android:name="com.example.library.ui.book_gender.BookGenderFragment"
+        android:name="com.example.library.framework.presentation.book_gender.BookGenderFragment"
         android:label="fragment_gender"
         tools:layout="@layout/fragment_book_gender" />
 </navigation>
