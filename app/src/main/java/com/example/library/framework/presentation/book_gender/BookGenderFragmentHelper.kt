@@ -1,4 +1,4 @@
-package com.example.library.ui.book_gender
+package com.example.library.framework.presentation.book_gender
 
 import com.example.library.business.domain.model.GenderModel
 import com.example.library.models.GenderCacheEntity

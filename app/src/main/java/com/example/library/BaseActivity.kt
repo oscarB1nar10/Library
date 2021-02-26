@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.layout_toolbar_component.*
 abstract class BaseActivity : AppCompatActivity() {
 
     //region Banner-related entities
-
+    lateinit var fragmentBinding: View
     private var popupWindow: PopupWindow? = null
     private var handler: Handler? = null
     private var runnable: Runnable? = null
@@ -35,11 +35,12 @@ abstract class BaseActivity : AppCompatActivity() {
         internal const val LONG_INTERVAL_POPUP_AUTO_DISMISS = 6000
     }
 
-    abstract fun getLayoutResourceId(): Int
+    abstract fun getLayoutResource(): View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(getLayoutResourceId())
+        fragmentBinding = getLayoutResource()
+        setContentView(fragmentBinding)
 
         setSupportActionBar(my_toolbar)
     }

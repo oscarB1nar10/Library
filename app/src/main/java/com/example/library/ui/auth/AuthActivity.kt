@@ -3,10 +3,12 @@ package com.example.library.ui.auth
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log.d
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import com.example.library.BaseActivity
 import com.example.library.R
+import com.example.library.databinding.ActivityAuthLayoutBinding
 import com.example.library.navigation.RootCoordinator
 import com.example.library.util.observe
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -33,7 +35,7 @@ class AuthActivity : BaseActivity() {
 
     private val authActivityViewModel: AuthActivityViewModel by viewModels()
 
-    override fun getLayoutResourceId(): Int  = R.layout.activity_auth_layout
+    override fun getLayoutResource(): View = ActivityAuthLayoutBinding.inflate(layoutInflater).root
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,5 +82,9 @@ class AuthActivity : BaseActivity() {
             d("handleResult", e.message.toString())
             Toast.makeText(this, getString(R.string.auth_login_error),Toast.LENGTH_SHORT)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 }

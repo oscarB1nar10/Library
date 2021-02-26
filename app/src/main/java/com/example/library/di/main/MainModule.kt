@@ -2,8 +2,6 @@ package com.example.library.di.main
 
 import com.example.library.framework.datasource.cache.mappers.CacheMapperGender
 import com.example.library.persistence.daos.GenderDao
-import com.example.library.ui.book_gender.BookGenderRepository
-import com.example.library.ui.book_gender.BookGenderRepositoryImpl
 import com.example.library.util.Constants
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.firestore.CollectionReference
@@ -34,15 +32,5 @@ object MainModule {
     @Provides
     fun provideFirebaseInstanceBooksGender(): CollectionReference{
         return FirebaseFirestore.getInstance().collection(Constants.COLLECTION_BOOKS_GENDER)
-    }
-
-    @Provides
-    fun provideBookGenderRepository(
-        @CollectionBooksGender genderCollection: CollectionReference,
-        genderDao: GenderDao,
-        cacheMapperGender: CacheMapperGender,
-        firebaseDb: DatabaseReference
-    ): BookGenderRepository {
-        return BookGenderRepositoryImpl(genderCollection, genderDao, cacheMapperGender, firebaseDb)
     }
 }
