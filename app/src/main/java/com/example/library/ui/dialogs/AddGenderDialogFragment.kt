@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.example.library.R
 import com.example.library.business.domain.model.GenderModel
-import com.example.library.ui.book_gender.createGender
-import com.example.library.ui.book_gender.genderToUpdate
+import com.example.library.framework.presentation.book_gender.createGender
+import com.example.library.framework.presentation.book_gender.genderToUpdate
 import com.example.library.util.hideKeyboard
 import com.example.library.util.showKeyboard
 import kotlinx.android.synthetic.main.layout_gender_dialog.*

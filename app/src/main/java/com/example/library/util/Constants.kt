@@ -23,6 +23,7 @@ object Constants {
     const val ERROR_TRYING_TO_PERFORM_INSERT = "Error trying to insert"
     const val ERROR_TRYING_TO_GET_DATA = "Error trying to get data"
     const val ERROR_TRYING_TO_SYNCHRONIZE_SERVER_AND_CACHE = "Error trying to synchronize server and cache"
+    const val ERROR_TRYING_TO_PERFORM_DELETE = "Error trying to delete"
 
     //endregion
 

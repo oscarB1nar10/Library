@@ -66,6 +66,7 @@ constructor(
             Transformations.switchMap(saveBookGender) { gender ->
                 liveData(Dispatchers.IO) {
                     bookGenderInteractors.saveNewBookGender.saveBookGender(gender).collect {
+                        getBookGendersFromCache()
                         emit(it)
                     }
                 }
