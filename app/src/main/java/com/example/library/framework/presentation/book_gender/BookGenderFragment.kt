@@ -91,7 +91,7 @@ class BookGenderFragment : Fragment(R.layout.fragment_book_gender) {
         bookGenderRecyclerAdapter.submitList(genders)
     }
 
-    private fun handleSaveGenderResponse(successFulMessage: String) {
+    private fun    handleSaveGenderResponse(successFulMessage: String) {
         Log.i("saveGenderR", "Success: $successFulMessage")
     }
 

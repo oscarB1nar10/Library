@@ -7,19 +7,19 @@ import javax.inject.Inject
 
 class CacheMapperGender
 @Inject
-constructor(): EntityMapper<GenderCacheEntity, GenderModel>{
+constructor() : EntityMapper<GenderCacheEntity, GenderModel> {
 
-    fun entityListToGenderList(entities: List<GenderCacheEntity>): List<GenderModel>{
+    fun entityListToGenderList(entities: List<GenderCacheEntity>): List<GenderModel> {
         val notes: ArrayList<GenderModel> = ArrayList()
-        for(entity in entities){
+        for (entity in entities) {
             notes.add(mapFromEntity(entity))
         }
         return notes
     }
 
-    fun genderListToEntityList(notes: List<GenderModel>): List<GenderCacheEntity>{
+    fun genderListToEntityList(notes: List<GenderModel>): List<GenderCacheEntity> {
         val entities: ArrayList<GenderCacheEntity> = ArrayList()
-        for(note in notes){
+        for (note in notes) {
             entities.add(mapToEntity(note))
         }
         return entities
@@ -37,6 +37,7 @@ constructor(): EntityMapper<GenderCacheEntity, GenderModel>{
 
     override fun mapToEntity(domainModel: GenderModel): GenderCacheEntity {
         return GenderCacheEntity(
+            pk = if (domainModel.pk == -1) 0 else domainModel.pk,
             name = domainModel.name,
             description = domainModel.description,
             created_at = domainModel.created_at,

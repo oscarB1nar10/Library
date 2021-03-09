@@ -29,7 +29,19 @@ class SaveNewBookGender(
             )
 
             responseCacheGender?.let { bookGender ->
-                insertBookGenderInServer(bookGender)
+                insertBookGenderInServer(bookGender).collect { state ->
+                    when (state) {
+                        is State.Loading -> {
+                            emit(State.loading())
+                        }
+                        is State.Success -> {
+                            emit(State.Success(state.data))
+                        }
+                        is State.Failed -> {
+                            emit(State.failed(state.message))
+                        }
+                    }
+                }
             } ?: emit(State.failed(ERROR_TRYING_TO_PERFORM_UPDATE))
 
         }

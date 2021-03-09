@@ -24,15 +24,15 @@ import javax.inject.Singleton
 class BookGenderRealTimeDbImpl
 @Inject
 constructor(
-        private val firebaseDb: DatabaseReference,
-        private val bookGenderNetworkMapper: BookGenderNetworkMapper,
-        private val userPreferencesRepository: UserPreferencesRepository
+    private val firebaseDb: DatabaseReference,
+    private val bookGenderNetworkMapper: BookGenderNetworkMapper,
+    private val userPreferencesRepository: UserPreferencesRepository
 ) : BookGenderRealTimeDb {
 
     lateinit var userToken: String
 
     init {
-            getUserToken()
+        getUserToken()
     }
 
     private fun getUserToken() {
@@ -41,7 +41,7 @@ constructor(
 
         CoroutineScope(Dispatchers.Main + job).launch {
             userPreferencesRepository.userPreferencesFlow.collect(object :
-                    FlowCollector<State<UserPreferencesRepositoryImpl.UserPreferences>> {
+                FlowCollector<State<UserPreferencesRepositoryImpl.UserPreferences>> {
                 override suspend fun emit(value: State<UserPreferencesRepositoryImpl.UserPreferences>) {
                     userToken = when (value) {
                         is State.Success -> {
@@ -60,18 +60,17 @@ constructor(
         emit(State.Loading())
 
         firebaseDb
-                .child(Constants.COLLECTION_OWNER)
-                .child(userToken)
-                .child(Constants.COLLECTION_BOOKS_GENDER)
-                .child(gender.pk.toString())
-                .setValue(gender)
+            .child(Constants.COLLECTION_OWNER)
+            .child(userToken)
+            .child(Constants.COLLECTION_BOOKS_GENDER)
+            .child(gender.pk.toString())
+            .setValue(gender)
 
         firebaseDb
-                .child(Constants.COLLECTION_OWNER)
-                .child(userToken)
-                .child(Constants.COLLECTION_BOOKS_GENDER)
-                .child(gender.pk.toString())
-                .valueEventFlow(INSERT_PERFORMED_SUCCESSFUL)
+            .child(Constants.COLLECTION_OWNER)
+            .valueEventFlow(INSERT_PERFORMED_SUCCESSFUL).collect { state ->
+                emit(state)
+            }
 
     }.catch {
         emit(State.failed(it.message.toString()))
@@ -86,24 +85,24 @@ constructor(
     }.flowOn(Dispatchers.IO)
 
     override suspend fun updateGender(
-            genderToUpdate: GenderModel
+        genderToUpdate: GenderModel
     ) = flow {
 
         firebaseDb
-                .child(Constants.COLLECTION_OWNER)
-                .child(userToken)
-                .child(Constants.COLLECTION_BOOKS_GENDER)
-                .child(genderToUpdate.pk.toString())
-                .setValue(genderToUpdate)
+            .child(Constants.COLLECTION_OWNER)
+            .child(userToken)
+            .child(Constants.COLLECTION_BOOKS_GENDER)
+            .child(genderToUpdate.pk.toString())
+            .setValue(genderToUpdate)
 
         firebaseDb
-                .child(Constants.COLLECTION_OWNER)
-                .child(userToken)
-                .child(Constants.COLLECTION_BOOKS_GENDER)
-                .child(genderToUpdate.pk.toString())
-                .valueEventFlow(UPDATE_PERFORMED_SUCCESSFUL).collect {state ->
-                    emit(state)
-                }
+            .child(Constants.COLLECTION_OWNER)
+            .child(userToken)
+            .child(Constants.COLLECTION_BOOKS_GENDER)
+            .child(genderToUpdate.pk.toString())
+            .valueEventFlow(UPDATE_PERFORMED_SUCCESSFUL).collect { state ->
+                emit(state)
+            }
 
     }.catch {
         emit(State.failed(it.message.toString()))
@@ -114,18 +113,18 @@ constructor(
         emit(State.Loading())
 
         firebaseDb
-                .child(Constants.COLLECTION_OWNER)
-                .child(userToken)
-                .child(Constants.COLLECTION_BOOKS_GENDER)
-                .child(gender.pk.toString())
-                .removeValue()
+            .child(Constants.COLLECTION_OWNER)
+            .child(userToken)
+            .child(Constants.COLLECTION_BOOKS_GENDER)
+            .child(gender.pk.toString())
+            .valueEventFlow(DELETE_PERFORMED_SUCCESSFUL)
 
         firebaseDb
-                .child(Constants.COLLECTION_OWNER)
-                .child(userToken)
-                .child(Constants.COLLECTION_BOOKS_GENDER)
-                .child(gender.pk.toString())
-                .valueEventFlow(DELETE_PERFORMED_SUCCESSFUL)
+            .child(Constants.COLLECTION_OWNER)
+            .child(userToken)
+            .child(Constants.COLLECTION_BOOKS_GENDER)
+            .child(gender.pk.toString())
+            .removeValue()
 
     }.catch {
         emit(State.failed(it.message.toString()))
@@ -135,9 +134,9 @@ constructor(
         emit(State.Loading())
 
         val gender = firebaseDb
-                .child(Constants.COLLECTION_OWNER)
-                .child(userToken)
-                .child(Constants.COLLECTION_BOOKS_GENDER).listen<GenderModel>()
+            .child(Constants.COLLECTION_OWNER)
+            .child(userToken)
+            .child(Constants.COLLECTION_BOOKS_GENDER).listen<GenderModel>()
 
         gender.collect {
             emit(it)
@@ -155,9 +154,9 @@ constructor(
         emit(State.Loading())
 
         val gender = firebaseDb
-                .child(Constants.COLLECTION_OWNER)
-                .child(userToken)
-                .child(Constants.COLLECTION_BOOKS_GENDER).listen<GenderModel>()
+            .child(Constants.COLLECTION_OWNER)
+            .child(userToken)
+            .child(Constants.COLLECTION_BOOKS_GENDER).listen<GenderModel>()
 
         gender.collect { genderListState ->
             when (genderListState) {
@@ -182,18 +181,19 @@ constructor(
 
     override suspend fun deleteGenders() = flow<State<String>> {
 
-        firebaseDb
-                .child(Constants.COLLECTION_OWNER)
-                .child(userToken)
-                .child(Constants.COLLECTION_BOOKS_GENDER)
-                .removeValue()
-
+        emit(State.Loading())
 
         firebaseDb
-                .child(Constants.COLLECTION_OWNER)
-                .child(userToken)
-                .child(Constants.COLLECTION_BOOKS_GENDER)
-                .valueEventFlow(DELETE_PERFORMED_SUCCESSFUL)
+            .child(Constants.COLLECTION_OWNER)
+            .child(userToken)
+            .child(Constants.COLLECTION_BOOKS_GENDER)
+            .valueEventFlow(DELETE_PERFORMED_SUCCESSFUL)
+
+        firebaseDb
+            .child(Constants.COLLECTION_OWNER)
+            .child(userToken)
+            .child(Constants.COLLECTION_BOOKS_GENDER)
+            .removeValue()
 
     }.catch {
         // If exception is throw , emit failed state along with message
