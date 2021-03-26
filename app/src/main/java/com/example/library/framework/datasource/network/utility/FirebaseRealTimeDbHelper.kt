@@ -10,55 +10,91 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 @ExperimentalCoroutinesApi
 object FirebaseRealTimeDbHelper {
 
-    fun DatabaseReference.valueEventFlow(successfulMessage: String): Flow<State<String>> = callbackFlow {
+    // Stream
+    fun DatabaseReference.valueEventFlow(successfulMessage: String): Flow<State<String>> =
+        callbackFlow {
 
-        val valueEventListener = object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                sendBlocking(State.Success(successfulMessage))
+            val valueEventListener = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    sendBlocking(State.Success(successfulMessage))
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    sendBlocking(State.Failed(error.message))
+                }
             }
 
-            override fun onCancelled(error: DatabaseError) {
-                sendBlocking(State.Failed(error.message))
+            addValueEventListener(valueEventListener)
+
+            awaitClose {
+                removeEventListener(valueEventListener)
             }
         }
 
-        addValueEventListener(valueEventListener)
+    // One shot
+    suspend fun DatabaseReference.valueEvenOneShot(successfulMessage: String): State<String> =
+        suspendCoroutine { continuation ->
+            val valueEventListener = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    continuation.resume(State.Success(successfulMessage))
+                }
 
-        awaitClose {
-            removeEventListener(valueEventListener)
+                override fun onCancelled(error: DatabaseError) {
+                    continuation.resume(State.Failed(error.message))
+                }
+
+            }
+            addListenerForSingleValueEvent(valueEventListener) // Subscribe to the event
         }
-    }
 
+    // Stream
     @ExperimentalCoroutinesApi
     inline fun <reified T : Any> DatabaseReference.listen(): Flow<State<List<T>>> =
-            callbackFlow {
-                val valueListener = object : ValueEventListener {
-                    override fun onCancelled(databaseError: DatabaseError) {
-                        close(databaseError.toException())
-                    }
+        callbackFlow {
+            val valueListener = object : ValueEventListener {
+                override fun onCancelled(databaseError: DatabaseError) {
+                    close(databaseError.toException())
+                }
 
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        try {
-                            val listT: MutableList<T> = mutableListOf()
-                            dataSnapshot.children.mapNotNullTo(listT) {
-                                it.getValue<T>(T::class.java)
-                            }
-
-                            offer(State.Success(listT))
-
-                        } catch (exp: Exception) {
-                            if (!isClosedForSend) offer(State.failed(exp.message.toString()))
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    try {
+                        val listT: MutableList<T> = mutableListOf()
+                        dataSnapshot.children.mapNotNullTo(listT) {
+                            it.getValue<T>(T::class.java)
                         }
+
+                        offer(State.Success(listT))
+
+                    } catch (exp: Exception) {
+                        if (!isClosedForSend) offer(State.failed(exp.message.toString()))
                     }
                 }
-                addListenerForSingleValueEvent(valueListener)
-
-                awaitClose { removeEventListener(valueListener) }
             }
+            addListenerForSingleValueEvent(valueListener)
 
+            awaitClose { removeEventListener(valueListener) }
+        }
+
+    // One shot
+    suspend fun DatabaseReference.singleValueEvent(): State<DataSnapshot> =
+        suspendCoroutine { continuation ->
+            val valueEventListener = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    continuation.resume(State.Success(snapshot))
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    continuation.resume(State.Failed(error.message))
+                }
+
+            }
+            addListenerForSingleValueEvent(valueEventListener) // Subscribe to the event
+        }
 
 }

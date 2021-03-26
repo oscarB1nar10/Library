@@ -5,17 +5,12 @@ import com.example.library.business.data.network.abstraction.BookGenderNetworkDa
 import com.example.library.business.domain.model.GenderModel
 import com.example.library.business.domain.states.State
 import com.example.library.util.Constants.ERROR_TRYING_TO_SYNCHRONIZE_SERVER_AND_CACHE
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
-
 class SynchronizeRemoteAndLocalGenders(
-        private val bookGenderCacheDataSource: BookGenderCacheDataSource,
-        private val bookGenderNetworkDataSource: BookGenderNetworkDataSource
+    private val bookGenderCacheDataSource: BookGenderCacheDataSource,
+    private val bookGenderNetworkDataSource: BookGenderNetworkDataSource
 ) {
 
-    suspend fun synchronizeRemoteAndLocalGenders() = flow<State<List<GenderModel>>> {
-
-        emit(State.loading())
+    suspend fun synchronizeRemoteAndLocalGenders(): State<List<GenderModel>> {
 
         // Get bookgender list from server
         val bookGenderListFromServer = bookGenderNetworkDataSource.get()
@@ -23,48 +18,40 @@ class SynchronizeRemoteAndLocalGenders(
         // Get bookGender list from cache
         val bookGenderListFromCache = bookGenderCacheDataSource.getCacheBookGenderAsList()
 
-        bookGenderListFromServer.collect { state ->
-
-            when (state) {
-                is State.Loading -> {
-                    emit(State.loading())
-                }
-                is State.Success -> {
-
-                    val bookGenderModelList = (compareEverySingleBookGenderByUpdatedAtDate(
-                            serverBookGenderList = state.data,
-                            cacheBookGenderList = bookGenderListFromCache
-                    ))
-
-                    if (bookGenderModelList.isNotEmpty())
-                        emit(State.success(bookGenderModelList))
-                    else
-                        emit(State.failed(ERROR_TRYING_TO_SYNCHRONIZE_SERVER_AND_CACHE))
-                }
-                is State.Failed -> {
-                    emit(State.failed(state.message))
-                }
+        return when (bookGenderListFromServer) {
+            is State.Success -> {
+                val synchronizedGenders = compareEverySingleBookGenderByUpdatedAtDate(
+                    serverBookGenderList = bookGenderListFromServer.data,
+                    cacheBookGenderList = bookGenderListFromCache
+                )
+                State.success(synchronizedGenders)
+            }
+            is State.Failed -> {
+                State.failed(ERROR_TRYING_TO_SYNCHRONIZE_SERVER_AND_CACHE)
+            }
+            else -> {
+                State.failed(ERROR_TRYING_TO_SYNCHRONIZE_SERVER_AND_CACHE)
             }
         }
     }
 
     private suspend fun compareEverySingleBookGenderByUpdatedAtDate(
-            serverBookGenderList: List<GenderModel>,
-            cacheBookGenderList: List<GenderModel>
+        serverBookGenderList: List<GenderModel>,
+        cacheBookGenderList: List<GenderModel>
     ): List<GenderModel> {
 
         for (serverBookGender in serverBookGenderList) {
             if (serverBookGender in cacheBookGenderList) {
                 val serverBookGenderModelInCache: GenderModel? =
-                        cacheBookGenderList.find { it.pk == serverBookGender.pk }
+                    cacheBookGenderList.find { it.pk == serverBookGender.pk }
                 serverBookGenderModelInCache?.let { cacheBookGender ->
                     if (GenderModel.getUpdatedAtDate(serverBookGender)
-                                    .after(GenderModel.getUpdatedAtDate(cacheBookGender))
+                            .after(GenderModel.getUpdatedAtDate(cacheBookGender))
                     ) {
                         // Delete [cacheBookGender] and replace with [serverBookGender]
                         deleteCacheBookGenderAndInsertServerBookGender(
-                                serverBookGender,
-                                cacheBookGender
+                            serverBookGender,
+                            cacheBookGender
                         )
                     } else {
                         updateServerBookGender(cacheBookGender)
@@ -80,8 +67,8 @@ class SynchronizeRemoteAndLocalGenders(
     }
 
     private suspend fun deleteCacheBookGenderAndInsertServerBookGender(
-            serverBookGender: GenderModel,
-            cacheBookGender: GenderModel
+        serverBookGender: GenderModel,
+        cacheBookGender: GenderModel
     ) {
         val response = bookGenderCacheDataSource.delete(cacheBookGender)
 

@@ -6,19 +6,19 @@ import kotlinx.coroutines.flow.Flow
 
 interface BookGenderNetworkDataSource {
 
-    suspend fun insert(gender: GenderModel): Flow<State<String>>
+    suspend fun insert(gender: GenderModel): State<String>
 
     suspend fun insertGenders(genders: List<GenderModel>): Flow<State<String>>
 
-    suspend fun updateGender(genderToUpdate: GenderModel): Flow<State<String>>
+    suspend fun updateGender(genderToUpdate: GenderModel): State<String>
 
-    suspend fun delete(gender: GenderModel): Flow<State<String>>
+    suspend fun delete(gender: GenderModel): State<String>
 
-    suspend fun get(): Flow<State<List<GenderModel>>>
+    suspend fun get(): State<List<GenderModel>>
 
     suspend fun getForFirebasePurposes(): List<GenderModel>
 
-    suspend fun searchGenderByPk(pk: Int): Flow<State<GenderModel?>>
+    suspend fun searchGenderByPk(pk: Int): State<GenderModel?>
 
     suspend fun deleteGenders(): Flow<State<String>>
 }

@@ -5,15 +5,23 @@ import com.example.library.business.domain.states.State
 import com.example.library.framework.datasource.network.abstraction.BookGenderRealTimeDb
 import com.example.library.framework.datasource.network.mappers.BookGenderNetworkMapper
 import com.example.library.framework.datasource.network.utility.FirebaseRealTimeDbHelper.listen
+import com.example.library.framework.datasource.network.utility.FirebaseRealTimeDbHelper.singleValueEvent
+import com.example.library.framework.datasource.network.utility.FirebaseRealTimeDbHelper.valueEvenOneShot
 import com.example.library.framework.datasource.network.utility.FirebaseRealTimeDbHelper.valueEventFlow
 import com.example.library.ui.auth.UserPreferencesRepository
 import com.example.library.ui.auth.UserPreferencesRepositoryImpl
 import com.example.library.util.Constants
 import com.example.library.util.Constants.DELETE_PERFORMED_SUCCESSFUL
+import com.example.library.util.Constants.EMPTY_STRING
+import com.example.library.util.Constants.ERROR_INITIAL_USER_TOKEN
+import com.example.library.util.Constants.ERROR_TRYING_TO_READ_INITIAL_DATA
 import com.example.library.util.Constants.INSERT_PERFORMED_SUCCESSFUL
+import com.example.library.util.Constants.SERVER_RESPONSE_TIME_OUT
 import com.example.library.util.Constants.UPDATE_PERFORMED_SUCCESSFUL
+import com.example.library.util.Constants.USER_TOKEN_RETRIEVED_SUCCESSFULLY
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -29,17 +37,11 @@ constructor(
     private val userPreferencesRepository: UserPreferencesRepository
 ) : BookGenderRealTimeDb {
 
-    lateinit var userToken: String
+    var userToken: String = EMPTY_STRING
 
-    init {
-        getUserToken()
-    }
-
-    private fun getUserToken() {
-
-        val job = SupervisorJob() // Create a scope which will keep reference to its child jobs
-
-        CoroutineScope(Dispatchers.Main + job).launch {
+    @JvmName("getUserToken1")
+    private suspend fun getUserToken(): String {
+        val jobTimeOut = withTimeoutOrNull(SERVER_RESPONSE_TIME_OUT) {
             userPreferencesRepository.userPreferencesFlow.collect(object :
                 FlowCollector<State<UserPreferencesRepositoryImpl.UserPreferences>> {
                 override suspend fun emit(value: State<UserPreferencesRepositoryImpl.UserPreferences>) {
@@ -53,12 +55,20 @@ constructor(
 
             })
         }
+
+        if (jobTimeOut == null)
+            withContext(Main) {
+                return@withContext ERROR_INITIAL_USER_TOKEN
+            }
+        else
+            withContext(Main) {
+                return@withContext USER_TOKEN_RETRIEVED_SUCCESSFULLY
+            }
+
+        return USER_TOKEN_RETRIEVED_SUCCESSFULLY
     }
 
-    override suspend fun insert(gender: GenderModel) = flow<State<String>> {
-
-        emit(State.Loading())
-
+    override suspend fun insert(gender: GenderModel): State<String> {
         firebaseDb
             .child(Constants.COLLECTION_OWNER)
             .child(userToken)
@@ -66,15 +76,11 @@ constructor(
             .child(gender.pk.toString())
             .setValue(gender)
 
-        firebaseDb
+        return firebaseDb
             .child(Constants.COLLECTION_OWNER)
-            .valueEventFlow(INSERT_PERFORMED_SUCCESSFUL).collect { state ->
-                emit(state)
-            }
+            .valueEvenOneShot(INSERT_PERFORMED_SUCCESSFUL)
 
-    }.catch {
-        emit(State.failed(it.message.toString()))
-    }.flowOn(Dispatchers.IO)
+    }
 
     override suspend fun insertGenders(genders: List<GenderModel>) = flow<State<String>> {
         for (gender in genders) {
@@ -86,8 +92,7 @@ constructor(
 
     override suspend fun updateGender(
         genderToUpdate: GenderModel
-    ) = flow {
-
+    ): State<String> {
         firebaseDb
             .child(Constants.COLLECTION_OWNER)
             .child(userToken)
@@ -95,29 +100,22 @@ constructor(
             .child(genderToUpdate.pk.toString())
             .setValue(genderToUpdate)
 
-        firebaseDb
+        return firebaseDb
             .child(Constants.COLLECTION_OWNER)
             .child(userToken)
             .child(Constants.COLLECTION_BOOKS_GENDER)
             .child(genderToUpdate.pk.toString())
-            .valueEventFlow(UPDATE_PERFORMED_SUCCESSFUL).collect { state ->
-                emit(state)
-            }
+            .valueEvenOneShot(UPDATE_PERFORMED_SUCCESSFUL)
 
-    }.catch {
-        emit(State.failed(it.message.toString()))
     }
 
-    override suspend fun delete(gender: GenderModel) = flow<State<String>> {
-
-        emit(State.Loading())
-
-        firebaseDb
+    override suspend fun delete(gender: GenderModel): State<String> {
+        val deleteGenderResponse = firebaseDb
             .child(Constants.COLLECTION_OWNER)
             .child(userToken)
             .child(Constants.COLLECTION_BOOKS_GENDER)
             .child(gender.pk.toString())
-            .valueEventFlow(DELETE_PERFORMED_SUCCESSFUL)
+            .valueEvenOneShot(DELETE_PERFORMED_SUCCESSFUL)
 
         firebaseDb
             .child(Constants.COLLECTION_OWNER)
@@ -126,61 +124,73 @@ constructor(
             .child(gender.pk.toString())
             .removeValue()
 
-    }.catch {
-        emit(State.failed(it.message.toString()))
-    }.flowOn(Dispatchers.IO)
+        return deleteGenderResponse
+    }
 
-    override suspend fun get() = flow {
-        emit(State.Loading())
+    override suspend fun get(): State<List<GenderModel>> {
+        var userTokenResponse = userToken
 
-        val gender = firebaseDb
-            .child(Constants.COLLECTION_OWNER)
-            .child(userToken)
-            .child(Constants.COLLECTION_BOOKS_GENDER).listen<GenderModel>()
-
-        gender.collect {
-            emit(it)
+        if (userToken.isEmpty()) {
+            userTokenResponse = getUserToken()
         }
-    }.catch {
-        // If exception is throw , emit failed state along with message
-        emit(State.failed(it.message.toString()))
-    }.flowOn(Dispatchers.IO)
+
+        if (userTokenResponse == ERROR_INITIAL_USER_TOKEN)
+            return State.failed(ERROR_INITIAL_USER_TOKEN)
+        else {
+            val genders = firebaseDb
+                .child(Constants.COLLECTION_OWNER)
+                .child(userToken)
+                .child(Constants.COLLECTION_BOOKS_GENDER)
+                .singleValueEvent()
+
+            return when (genders) {
+                is State.Success -> {
+                    val genderList: MutableList<GenderModel> = mutableListOf()
+                    genders.data.children.mapNotNullTo(genderList) {
+                        it.getValue<GenderModel>(GenderModel::class.java)
+                    }
+                    State.Success(genderList)
+                }
+                is State.Failed -> {
+                    State.failed(ERROR_TRYING_TO_READ_INITIAL_DATA)
+                }
+                else -> {
+                    State.failed(ERROR_TRYING_TO_READ_INITIAL_DATA)
+                }
+            }
+        }
+    }
 
     override suspend fun getForFirebasePurposes(): List<GenderModel> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun searchGenderByPk(pk: Int) = flow<State<GenderModel?>> {
-        emit(State.Loading())
-
+    override suspend fun searchGenderByPk(pk: Int): State<GenderModel?> {
         val gender = firebaseDb
             .child(Constants.COLLECTION_OWNER)
             .child(userToken)
-            .child(Constants.COLLECTION_BOOKS_GENDER).listen<GenderModel>()
+            .child(Constants.COLLECTION_BOOKS_GENDER)
+            .singleValueEvent()
 
-        gender.collect { genderListState ->
-            when (genderListState) {
-                is State.Loading -> {
-                    emit(State.loading())
+        return when (gender) {
+            is State.Success -> {
+                val genderList: MutableList<GenderModel> = mutableListOf()
+                gender.data.children.mapNotNullTo(genderList) {
+                    it.getValue<GenderModel>(GenderModel::class.java)
                 }
-
-                is State.Success -> {
-                    emit(State.success(genderListState.data.firstOrNull()))
-                }
-
-                is State.Failed -> {
-                    emit(State.failed(Constants.ERROR_TRYING_TO_GET_REMOTE_GENDER))
-                }
+                State.Success(genderList.firstOrNull())
+            }
+            is State.Failed -> {
+                State.failed(ERROR_TRYING_TO_READ_INITIAL_DATA)
+            }
+            else -> {
+                State.failed(ERROR_TRYING_TO_READ_INITIAL_DATA)
             }
         }
 
-    }.catch {
-        // If exception is throw , emit failed state along with message
-        emit(State.failed(it.message.toString()))
-    }.flowOn(Dispatchers.IO)
+    }
 
     override suspend fun deleteGenders() = flow<State<String>> {
-
         emit(State.Loading())
 
         firebaseDb

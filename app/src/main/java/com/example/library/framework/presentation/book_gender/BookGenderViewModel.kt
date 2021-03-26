@@ -13,9 +13,9 @@ import kotlinx.coroutines.flow.collect
 class BookGenderViewModel
 @ViewModelInject
 constructor(
-        private val bookGenderInteractors: BookGenderInteractors,
-        userPreferencesRepository: UserPreferencesRepository,
-        @Assisted private val savedStateHandle: SavedStateHandle
+    private val bookGenderInteractors: BookGenderInteractors,
+    userPreferencesRepository: UserPreferencesRepository,
+    @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     var gender: GenderModel? = null
@@ -23,7 +23,7 @@ constructor(
     private val saveBookGender: MutableLiveData<GenderModel> = MutableLiveData()
     private val updateBookGender: MutableLiveData<GenderModel> = MutableLiveData()
     private val synchronizeRemoteAndLocalGenders: MutableLiveData<List<GenderModel>> =
-            MutableLiveData()
+        MutableLiveData()
     private val removeGender: MutableLiveData<GenderModel> = MutableLiveData()
     private val getBookGendersFromCache: MutableLiveData<Boolean> = MutableLiveData()
 
@@ -31,70 +31,71 @@ constructor(
     private val userPreferences = userPreferencesRepository.userPreferencesFlow.asLiveData()
 
     val getRemoteGendersFromRemoteResponse: LiveData<State<List<GenderModel>>> =
-            Transformations.switchMap(userPreferences) { _ ->
-                liveData(Dispatchers.IO) {
-                    bookGenderInteractors.getBookGendersFromServer.getBookGendersFromServer().collect {
-                        emit(it)
-                    }
-                }
+        Transformations.switchMap(userPreferences) {
+            liveData(Dispatchers.Default) {
+                emit(State.Loading())
+                val getBookGendersFromServerResponse =
+                    bookGenderInteractors.getBookGendersFromServer.getBookGendersFromServer()
+                emit(getBookGendersFromServerResponse)
             }
+        }
 
     val synchronizeRemoteAndLocalGendersResponse: LiveData<State<List<GenderModel>>> =
-            Transformations.switchMap(synchronizeRemoteAndLocalGenders) { genders ->
-                liveData(Dispatchers.IO) {
+        Transformations.switchMap(synchronizeRemoteAndLocalGenders) { genders ->
+            liveData(Dispatchers.Default) {
+                emit(State.Loading())
+                val synchronizeRemoteAndLocalGendersResponse =
                     bookGenderInteractors.synchronizeRemoteAndLocalGenders.synchronizeRemoteAndLocalGenders()
-                            .collect {
-                                emit(it)
-                            }
-                }
+                emit(synchronizeRemoteAndLocalGendersResponse)
             }
+        }
 
     /**
      * This function will observe for a stream of data coming from data base
      * when the table for book genders changes
      */
     val getBookGendersFromCacheResponse: LiveData<State<List<GenderModel>>> =
-            Transformations.switchMap(getBookGendersFromCache) {
-                liveData(Dispatchers.IO) {
-                    bookGenderInteractors.getBookGendersFromCache.getBookGendersFromCache().collect {
-                        emit(it)
-                    }
+        Transformations.switchMap(getBookGendersFromCache) {
+            liveData(Dispatchers.IO) {
+                emit(State.Loading())
+                bookGenderInteractors.getBookGendersFromCache.getBookGendersFromCache().collect {
+                    emit(it)
                 }
             }
+        }
 
     val saveGenderResponse: LiveData<State<String>> =
-            Transformations.switchMap(saveBookGender) { gender ->
-                liveData(Dispatchers.IO) {
-                    bookGenderInteractors.saveNewBookGender.saveBookGender(gender).collect {
-                        getBookGendersFromCache()
-                        emit(it)
-                    }
-                }
+        Transformations.switchMap(saveBookGender) { gender ->
+            liveData(Dispatchers.IO) {
+                emit(State.Loading())
+                val saveNewBookGenderResponse =
+                    bookGenderInteractors.saveNewBookGender.saveBookGender(gender)
+                getBookGendersFromCache()
+                emit(saveNewBookGenderResponse)
             }
+        }
 
     val updateGenderResponse: LiveData<State<String>> =
-            Transformations.switchMap(updateBookGender) { gender ->
-                liveData(Dispatchers.IO) {
-                    bookGenderInteractors.updateGender.updateGender(gender)
-                            .collect {
-                                // get genders updated from cache
-                                getBookGendersFromCache()
-                                emit(it)
-                            }
-
-                }
+        Transformations.switchMap(updateBookGender) { gender ->
+            liveData(Dispatchers.IO) {
+                emit(State.Loading())
+                val updateGenderResponse = bookGenderInteractors.updateGender.updateGender(gender)
+                // get genders updated from cache
+                getBookGendersFromCache()
+                emit(updateGenderResponse)
             }
+        }
 
     val removeGenderResponse: LiveData<State<String>> =
-            Transformations.switchMap(removeGender) { gender ->
-                liveData(viewModelScope.coroutineContext) {
-                    bookGenderInteractors.removeGender.removeGender(gender)
-                            .collect {
-                                getBookGendersFromCache()
-                                emit(it)
-                            }
-                }
+        Transformations.switchMap(removeGender) { gender ->
+            liveData(viewModelScope.coroutineContext) {
+                emit(State.Loading())
+                val removeGenderResponse = bookGenderInteractors.removeGender.removeGender(gender)
+                getBookGendersFromCache()
+                emit(removeGenderResponse)
+
             }
+        }
 
     /**
      * the [getBookGendersFromCache] is a fired that should change it's state to fire
