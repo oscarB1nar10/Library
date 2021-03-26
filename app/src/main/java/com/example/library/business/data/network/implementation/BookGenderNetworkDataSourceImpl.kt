@@ -15,7 +15,7 @@ constructor(
         private val bookGenderRealtimeDb: BookGenderRealTimeDb
 ) : BookGenderNetworkDataSource {
 
-    override suspend fun insert(gender: GenderModel): Flow<State<String>> {
+    override suspend fun insert(gender: GenderModel): State<String> {
         return bookGenderRealtimeDb.insert(gender)
     }
 
@@ -23,15 +23,15 @@ constructor(
         return bookGenderRealtimeDb.insertGenders(genders)
     }
 
-    override suspend fun updateGender(genderToUpdate: GenderModel): Flow<State<String>> {
+    override suspend fun updateGender(genderToUpdate: GenderModel): State<String> {
         return bookGenderRealtimeDb.updateGender(genderToUpdate)
     }
 
-    override suspend fun delete(gender: GenderModel): Flow<State<String>> {
+    override suspend fun delete(gender: GenderModel): State<String> {
         return bookGenderRealtimeDb.delete(gender)
     }
 
-    override suspend fun get(): Flow<State<List<GenderModel>>> {
+    override suspend fun get(): State<List<GenderModel>> {
         return bookGenderRealtimeDb.get()
     }
 
@@ -39,7 +39,7 @@ constructor(
         return bookGenderRealtimeDb.getForFirebasePurposes()
     }
 
-    override suspend fun searchGenderByPk(pk: Int): Flow<State<GenderModel?>>{
+    override suspend fun searchGenderByPk(pk: Int): State<GenderModel?>{
         return bookGenderRealtimeDb.searchGenderByPk(pk)
     }
 

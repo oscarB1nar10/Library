@@ -1,9 +1,7 @@
 package com.example.library.framework.presentation.book_gender
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -11,7 +9,12 @@ import com.example.library.BaseActivity
 import com.example.library.R
 import com.example.library.business.domain.model.GenderModel
 import com.example.library.databinding.FragmentBookGenderBinding
+import com.example.library.framework.util.MessageDialogsHelper.showErrorBanner
+import com.example.library.framework.util.MessageDialogsHelper.showSuccessfulBanner
 import com.example.library.ui.adapters.BookGenderRecyclerAdapter
+import com.example.library.util.Constants.DELETE_PERFORMED_SUCCESSFUL
+import com.example.library.util.Constants.INSERT_PERFORMED_SUCCESSFUL
+import com.example.library.util.Constants.UPDATE_PERFORMED_SUCCESSFUL
 import com.example.library.util.observe
 import com.example.library.util.observeAndPreventsHandleEventAgain
 import com.example.library.util.viewBinding
@@ -48,8 +51,8 @@ class BookGenderFragment : Fragment(R.layout.fragment_book_gender) {
         recycler_gender_items.apply {
             layoutManager = LinearLayoutManager(activity)
             bookGenderRecyclerAdapter = BookGenderRecyclerAdapter(
-                    ::editGender,
-                    ::deleteGender
+                ::editGender,
+                ::deleteGender
             )
             adapter = bookGenderRecyclerAdapter
         }
@@ -58,24 +61,27 @@ class BookGenderFragment : Fragment(R.layout.fragment_book_gender) {
     private fun subscribeObservers() {
 
         observeAndPreventsHandleEventAgain(
-                bookGenderViewModel.getRemoteGendersFromRemoteResponse,
-                ::handleGetRemoteGendersResponse
+            bookGenderViewModel.getRemoteGendersFromRemoteResponse,
+            ::handleGetRemoteGendersResponse
         )
 
         observe(
-                bookGenderViewModel.synchronizeRemoteAndLocalGendersResponse,
-                ::handleSynchronizeRemoteAndLocalGendersResponse
+            bookGenderViewModel.synchronizeRemoteAndLocalGendersResponse,
+            ::handleSynchronizeRemoteAndLocalGendersResponse
         )
 
-        observe(bookGenderViewModel.getBookGendersFromCacheResponse, ::handleGetBookGendersFromCache)
+        observe(
+            bookGenderViewModel.getBookGendersFromCacheResponse,
+            ::handleGetBookGendersFromCache
+        )
 
         observe(bookGenderViewModel.saveGenderResponse, ::handleSaveGenderResponse)
 
         observe(bookGenderViewModel.updateGenderResponse, ::handleUpdateGenderResponse)
 
         observeAndPreventsHandleEventAgain(
-                bookGenderViewModel.removeGenderResponse,
-                ::handleRemoveGenderResponse
+            bookGenderViewModel.removeGenderResponse,
+            ::handleRemoveGenderResponse
         )
     }
 
@@ -91,21 +97,31 @@ class BookGenderFragment : Fragment(R.layout.fragment_book_gender) {
         bookGenderRecyclerAdapter.submitList(genders)
     }
 
-    private fun    handleSaveGenderResponse(successFulMessage: String) {
-        Log.i("saveGenderR", "Success: $successFulMessage")
+    private fun handleSaveGenderResponse(successFulMessage: String) {
+        when (successFulMessage) {
+            INSERT_PERFORMED_SUCCESSFUL -> (activity as BaseActivity).showSuccessfulBanner(
+                successFulMessage
+            )
+            else -> (activity as BaseActivity).showErrorBanner(successFulMessage)
+        }
     }
 
     private fun handleUpdateGenderResponse(successFulMessage: String) {
-        if (successFulMessage.isNotEmpty()) {
-            (activity as BaseActivity).showBanner(
-                    getString(R.string.add_book_gender_gender_updated),
-                    BaseActivity.BannerType.SUCCESS
+        when (successFulMessage) {
+            UPDATE_PERFORMED_SUCCESSFUL -> (activity as BaseActivity).showSuccessfulBanner(
+                successFulMessage
             )
+            else -> (activity as BaseActivity).showErrorBanner(successFulMessage)
         }
     }
 
     private fun handleRemoveGenderResponse(successFulMessage: String) {
-        Toast.makeText(activity, "Gender removed $successFulMessage", Toast.LENGTH_LONG).show()
+        when (successFulMessage) {
+            DELETE_PERFORMED_SUCCESSFUL -> (activity as BaseActivity).showSuccessfulBanner(
+                successFulMessage
+            )
+            else -> (activity as BaseActivity).showErrorBanner(successFulMessage)
+        }
     }
 
     private fun editGender(gender: GenderModel) {

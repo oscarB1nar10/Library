@@ -4,22 +4,17 @@ import com.example.library.business.data.cache.abstraction.BookGenderCacheDataSo
 import com.example.library.business.data.network.abstraction.BookGenderNetworkDataSource
 import com.example.library.business.domain.model.GenderModel
 import com.example.library.business.domain.states.State
-import com.example.library.util.Constants.ERROR_TRYING_TO_PERFORM_UPDATE
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
+import com.example.library.util.Constants.ERROR_TRYING_TO_PERFORM_INSERT
 
 class SaveNewBookGender(
     private val bookGenderCacheDataSource: BookGenderCacheDataSource,
     private val bookGenderNetworkDataSource: BookGenderNetworkDataSource
 ) {
 
-    suspend fun saveBookGender(bookGender: GenderModel) = flow<State<String>> {
-
-        emit(State.loading())
-
+    suspend fun saveBookGender(bookGender: GenderModel): State<String> {
         val response = bookGenderCacheDataSource.insert(bookGender)
 
-        if (response > 0) {
+        return if (response > 0) {
 
             // Get the Gender above inserted, the difference is that this have a different id.
             val responseCacheGender = bookGenderCacheDataSource.getGenderFromQuery(
@@ -28,40 +23,11 @@ class SaveNewBookGender(
                 updatedAt = bookGender.updated_at.toString()
             )
 
-            responseCacheGender?.let { bookGender ->
-                insertBookGenderInServer(bookGender).collect { state ->
-                    when (state) {
-                        is State.Loading -> {
-                            emit(State.loading())
-                        }
-                        is State.Success -> {
-                            emit(State.Success(state.data))
-                        }
-                        is State.Failed -> {
-                            emit(State.failed(state.message))
-                        }
-                    }
-                }
-            } ?: emit(State.failed(ERROR_TRYING_TO_PERFORM_UPDATE))
-
+            responseCacheGender?.let { cacheGender ->
+                bookGenderNetworkDataSource.insert(cacheGender)
+            } ?: State.failed(ERROR_TRYING_TO_PERFORM_INSERT)
+        } else {
+            State.failed(ERROR_TRYING_TO_PERFORM_INSERT)
         }
     }
-
-    private suspend fun insertBookGenderInServer(bookGender: GenderModel) = flow<State<String>> {
-        val serverResponse = bookGenderNetworkDataSource.insert(bookGender)
-        serverResponse.collect { state ->
-            when (state) {
-                is State.Loading -> {
-                    emit(State.loading())
-                }
-                is State.Success -> {
-                    emit(State.Success(state.data))
-                }
-                is State.Failed -> {
-                    emit(State.failed(state.message))
-                }
-            }
-        }
-    }
-
 }
