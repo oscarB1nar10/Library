@@ -1,21 +1,21 @@
 package com.example.library.framework.presentation.book_gender
 
-import androidx.hilt.Assisted
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.example.library.business.domain.model.GenderModel
 import com.example.library.business.domain.states.State
 import com.example.library.business.interactors.bookgender.BookGenderInteractors
 import com.example.library.ui.auth.UserPreferencesRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
+import javax.inject.Inject
 
+@HiltViewModel
 class BookGenderViewModel
-@ViewModelInject
+@Inject
 constructor(
     private val bookGenderInteractors: BookGenderInteractors,
     userPreferencesRepository: UserPreferencesRepository,
-    @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     var gender: GenderModel? = null
