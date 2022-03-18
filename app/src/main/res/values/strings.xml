@@ -1,4 +1,5 @@
 <resources>
+
     <string name="app_name">Library</string>
 
     <!-- MainActivity -->
@@ -40,7 +41,6 @@
 
     <!-- Auth -->
     <string name="auth_login_error">Error trying to login</string>
-
 
 
 </resources>

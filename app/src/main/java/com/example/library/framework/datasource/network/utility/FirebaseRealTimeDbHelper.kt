@@ -7,7 +7,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.sendBlocking
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlin.coroutines.resume
@@ -22,11 +22,11 @@ object FirebaseRealTimeDbHelper {
 
             val valueEventListener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    sendBlocking(State.Success(successfulMessage))
+                    trySendBlocking(State.Success(successfulMessage))
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    sendBlocking(State.Failed(error.message))
+                    trySendBlocking(State.Failed(error.message))
                 }
             }
 
@@ -69,10 +69,10 @@ object FirebaseRealTimeDbHelper {
                             it.getValue<T>(T::class.java)
                         }
 
-                        offer(State.Success(listT))
+                        trySend(State.Success(listT)).isSuccess
 
                     } catch (exp: Exception) {
-                        if (!isClosedForSend) offer(State.failed(exp.message.toString()))
+                        if (!isClosedForSend) trySend(State.failed(exp.message.toString())).isSuccess
                     }
                 }
             }

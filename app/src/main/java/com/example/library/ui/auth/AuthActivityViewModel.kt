@@ -1,18 +1,18 @@
 package com.example.library.ui.auth
 
-import androidx.hilt.Assisted
-import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@HiltViewModel
 class AuthActivityViewModel
-@ViewModelInject constructor(
+@Inject constructor(
     private val userPreferencesRepository: UserPreferencesRepository,
-    @Assisted private val savedStateHandle: SavedStateHandle
-): ViewModel() {
+): ViewModel(), LifecycleObserver {
 
 
     val userPreferences = userPreferencesRepository.userPreferencesFlow.asLiveData()
